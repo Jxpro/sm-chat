@@ -7,6 +7,7 @@ import os
 import time
 import tkinter as tk
 from tkinter import *
+from tkinter import colorchooser, simpledialog
 from tkinter.scrolledtext import ScrolledText
 
 import filetype
@@ -49,6 +50,12 @@ class ChatForm(tk.Frame):
         self.send_btn = tk.Button(self.input_frame, text='发送消息(Ctrl+Enter)', font=("仿宋", 14, 'bold'), fg="black",
                                   bg="#f5f3f2", activebackground="#efefef", relief=GROOVE, command=self.send_message)
         self.send_btn.pack(side=RIGHT, expand=False)
+        self.font_btn = tk.Button(self.input_frame, text='字体颜色', font=("仿宋", 14, 'bold'), fg="black", bg="#f5f3f2",
+                                  activebackground="#efefef", relief=GROOVE, command=self.choose_color)
+        self.font_btn.pack(side=LEFT, expand=False)
+        self.font_btn = tk.Button(self.input_frame, text='字体大小', font=("仿宋", 14, 'bold'), fg="black", bg="#f5f3f2",
+                                  activebackground="#efefef", relief=GROOVE, command=self.choose_font_size)
+        self.font_btn.pack(side=LEFT, expand=False)
 
         self.chat_box = ScrolledText(self.right_frame, bg='#d4dde1')
         self.input_frame.pack(side=BOTTOM, fill=X, expand=False)
@@ -147,3 +154,24 @@ class ChatForm(tk.Frame):
                       })
         self.input_textbox.delete("1.0", END)
         return 'break'
+
+    def choose_color(self):
+        """ 选择字体颜色 """
+        _, self.font_color = colorchooser.askcolor(initialcolor=self.font_color)
+        self.apply_font_change(None)
+
+    def choose_font_size(self):
+        """ 选择字体大小 """
+        result = simpledialog.askinteger("设置", "请输入字体大小", initialvalue=self.font_size)
+        if result is None:
+            return
+        self.font_size = result
+        self.apply_font_change(None)
+
+    def apply_font_change(self, _):
+        """" 更新字体 """
+        try:
+            self.input_textbox.tag_config('new', foreground=self.font_color, font=(None, self.font_size))
+            self.input_textbox.tag_add('new', '1.0', END)
+        except:
+            pass
