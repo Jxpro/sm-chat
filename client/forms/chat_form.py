@@ -2,7 +2,9 @@
 # -*- coding:utf-8 -*-
 
 """"聊天界面及处理与聊天相关的事件"""
+import datetime
 import os
+import time
 import tkinter as tk
 from tkinter import *
 from tkinter.scrolledtext import ScrolledText
