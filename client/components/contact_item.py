@@ -3,9 +3,10 @@
 
 """联系人列表 UI"""
 from tkinter import *
-from pprint import pprint
 
 """"联系人界面"""
+
+
 class ContactItem(Frame):
 
     def __init__(self, parent, onclick):
@@ -35,7 +36,8 @@ class ContactItem(Frame):
 
         # 最后一条消息的时间
         self.last_message_time_frame.pack(side=TOP, expand=FALSE, fill=BOTH)
-        self.last_message_time = Label(self.last_message_time_frame, text="date", font=('仿宋', 10), fg='#575757', bg="#43d5eb")
+        self.last_message_time = Label(self.last_message_time_frame, text="date", font=('仿宋', 10), fg='#575757',
+                                       bg="#43d5eb")
         self.last_message_time.pack(side=RIGHT, anchor=E)
 
         # 好友的ip

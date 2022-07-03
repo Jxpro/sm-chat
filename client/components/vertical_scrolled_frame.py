@@ -8,6 +8,7 @@ from tkinter import *
 
 class VerticalScrolledFrame(Frame):
     """一个真正工作的纯Tkinter可滚动框架!"""
+
     def __init__(self, parent, *args, **kw):
         Frame.__init__(self, parent, *args, **kw)
 
@@ -40,6 +41,7 @@ class VerticalScrolledFrame(Frame):
             if interior.winfo_reqwidth() != self.canvas.winfo_width():
                 # 更新画布的宽度以适应内部框架
                 self.canvas.config(width=interior.winfo_reqwidth())
+
         interior.bind('<Configure>', _configure_interior)
 
         def _configure_canvas(event):
