@@ -22,7 +22,10 @@ class LoginForm(tk.Frame):
         self.master = master
         self.master.title("SMchat——基于国密算法的安全即时通信系统")
         self.master.resizable(width=False, height=False)
-        self.master.geometry('480x300')
+        # 使窗口居中
+        width = self.master.winfo_screenwidth()
+        height = self.master.winfo_screenheight()
+        self.master.geometry("%dx%d+%d+%d" % (480, 300, (width - 480) / 2, (height - 300) / 2))
         # 画布放置图片
         self.canvas = tk.Canvas(self.master, width=480, height=300)
         self.image_file = tk.PhotoImage(file='client/forms/images/login_bg.gif')
