@@ -19,7 +19,8 @@ from common.message import MessageType, _deserialize_any
 
 class ContactsForm(tk.Frame):
     bundle_process_done = False
-
+    pack_objs = []
+    
     def __init__(self, master=None):
         client.memory.contact_window.append(self)
         super().__init__(master)
@@ -198,8 +199,6 @@ class ContactsForm(tk.Frame):
         result = messagebox.askyesno("是否加好友", name + "不在您的好友列表中，是否加好友？")
         if result:
             self.sc.send(MessageType.add_friend, username)
-
-    pack_objs = []
 
     def refresh_contacts(self):
         """更新列表界面"""
