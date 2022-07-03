@@ -27,10 +27,6 @@ def gen_secret(prefix=""):
 
 def get_shared_secret(their_secret, prefix=""):
     """生成共享密钥"""
-    with open("public.pem", "rb") as f:
-        pub = f.read()
-        f.close()
-
     f = open(prefix + "_private.pem", "rb")
     secret = int(f.read())
     f.close()
