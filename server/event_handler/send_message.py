@@ -7,14 +7,11 @@
     使用sent判断位判断信息是否对方接收成功。
 """
 
-from pprint import pprint
-from common.message import MessageType, _serialize_dict
-from server.broadcast import broadcast
-import server.memory
-from common.util import md5
-from server.util import database
-from server.memory import *
 import time
+
+from common.message import MessageType, _serialize_dict
+from server.memory import *
+from server.util import database
 
 
 # {target_type:int(0=私聊 1=群聊),target_id:int,message:str}
@@ -23,7 +20,6 @@ def run(sc, parameters):
     # pprint(parameters)
     user_id = sc_to_user_id[sc]
     sender = database.get_user(user_id)
-
 
     # target_id在后面填入，对于发送方和接收方不一样
     message = {"message": parameters['message'], 'sender_id': user_id,
