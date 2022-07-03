@@ -10,18 +10,17 @@
 event_type = 1 = login,则会执行login.run(sc,parameters).
 """
 
-from pprint import pprint
-import server.event_handler.login
-import server.event_handler.send_message
-import server.event_handler.register
-import server.event_handler.resolve_friend_request
-import server.event_handler.client_echo
 import server.event_handler.add_friend
+import server.event_handler.bad
+import server.event_handler.client_echo
+import server.event_handler.create_room
 import server.event_handler.del_friend
 import server.event_handler.join_room
-import server.event_handler.create_room
+import server.event_handler.login
 import server.event_handler.query_room_users
-import server.event_handler.bad
+import server.event_handler.register
+import server.event_handler.resolve_friend_request
+import server.event_handler.send_message
 from common.message import MessageType
 
 event_handler_map = {
