@@ -29,7 +29,7 @@ def run(sc, parameters):
         sp = context.split()
         f.close()
     with open(certname, 'wb') as f:
-        f.write((str(parameters[0]) + ' ' + str(parameters[2]) + " " + str(sp[2])).encode())
+        f.write((str(parameters[0]) + ' ' + str(parameters[2]) + " " + sp[2].decode()).encode())
         f.close()
 
     c = database.get_cursor()
