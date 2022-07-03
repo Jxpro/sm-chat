@@ -13,13 +13,11 @@ class VerticalScrolledFrame(Frame):
         Frame.__init__(self, parent, *args, **kw)
 
         # 创建一个画布对象和一个垂直滚动条来滚动它
-        self.vscrollbar = Scrollbar(self, background="#43d5eb", orient=VERTICAL)
+        self.vscrollbar = Scrollbar(self, orient=VERTICAL)
         self.vscrollbar.pack(fill=Y, side=RIGHT, expand=FALSE)
 
         # 画布背景
         self.canvas = tk.Canvas(self, bd=0, highlightthickness=0, yscrollcommand=self.vscrollbar.set)
-        self.image_file = tk.PhotoImage(file='client/forms/images/VerticalScrolled.png')
-        self.image = self.canvas.create_image(0, 0, anchor='nw', image=self.image_file)
 
         # 定位画布位置
         self.canvas.pack(side=LEFT, fill=BOTH, expand=TRUE)

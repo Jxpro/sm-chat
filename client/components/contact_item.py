@@ -16,33 +16,33 @@ class ContactItem(Frame):
             e.widget = self
             onclick(e)
 
-        Frame.config(self, bg="#43d5eb", borderwidth=2, relief=GROOVE)
+        Frame.config(self, bg="#9aa7b1", borderwidth=2, relief=GROOVE)
 
         # == Line 1
-        self.title_frame = Frame(self, bg="#43d5eb")
-        self.last_message_time_frame = Frame(self, bg="#43d5eb")
-        self.friend_ip_frame = Frame(self, bg="#43d5eb")
-        self.message_frame = Frame(self, bg="#43d5eb")
+        self.title_frame = Frame(self, bg="#9aa7b1")
+        self.last_message_time_frame = Frame(self, bg="#9aa7b1")
+        self.friend_ip_frame = Frame(self, bg="#9aa7b1")
+        self.message_frame = Frame(self, bg="#9aa7b1")
 
         # last_message
         self.message_frame.pack(side=BOTTOM, fill=BOTH, expand=True, pady=(0, 5), padx=3)
-        self.last_message = Label(self.message_frame, text="recent message", font=('新宋体', 13), fg='black', bg="#43d5eb")
+        self.last_message = Label(self.message_frame, text="recent message", font=('新宋体', 13), fg='black', bg="#9aa7b1")
         self.last_message.pack(side=LEFT, fill=X, expand=True, anchor=W)
 
         # title
         self.title_frame.pack(side=LEFT, fill=BOTH, expand=True, anchor=W, pady=(1, 1), padx=3)
-        self.title = Label(self.title_frame, text="Title", font=("仿宋", 15, 'bold'), bg="#43d5eb")
+        self.title = Label(self.title_frame, text="Title", font=("仿宋", 15, 'bold'), bg="#9aa7b1")
         self.title.pack(side=LEFT, fill=None, anchor=W)
 
         # 最后一条消息的时间
         self.last_message_time_frame.pack(side=TOP, expand=FALSE, fill=BOTH)
         self.last_message_time = Label(self.last_message_time_frame, text="date", font=('仿宋', 10), fg='#575757',
-                                       bg="#43d5eb")
+                                       bg="#9aa7b1")
         self.last_message_time.pack(side=RIGHT, anchor=E)
 
         # 好友的ip
         self.friend_ip_frame.pack(side=TOP, expand=FALSE, fill=BOTH)
-        self.friend_ip = Label(self.friend_ip_frame, text="ip", font=('仿宋', 10), fg='#575757', bg="#43d5eb")
+        self.friend_ip = Label(self.friend_ip_frame, text="ip", font=('仿宋', 10), fg='#575757', bg="#9aa7b1")
         self.friend_ip.pack(side=RIGHT, anchor=E)
 
         # 处理未读消息
