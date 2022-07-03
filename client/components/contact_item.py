@@ -22,9 +22,9 @@ class ContactItem(Frame):
         self.last_message_time_frame = Frame(self, bg="#9aa7b1")
         self.friend_ip_frame = Frame(self, bg="#9aa7b1")
         self.message_frame = Frame(self, bg="#9aa7b1")
+        self.message_frame.pack(side=BOTTOM, fill=BOTH, expand=True, pady=(0, 5), padx=3)
 
         # last_message
-        self.message_frame.pack(side=BOTTOM, fill=BOTH, expand=True, pady=(0, 5), padx=3)
         self.last_message = Label(self.message_frame, text="recent message", font=('新宋体', 13), fg='black', bg="#9aa7b1")
         self.last_message.pack(side=LEFT, fill=X, expand=True, anchor=W)
 
