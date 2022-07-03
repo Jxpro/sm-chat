@@ -119,8 +119,6 @@ def _serialize_list(list):
 
 def _serialize_dict(dict):
     # |--Length of Key(1Byte)--|--Key--|--Body (self-evident length)--|
-    # |--Length of Key(1Byte)--|--Key--|--Body (self-evident length)--|
-    # ...
 
     body = bytearray()
 
