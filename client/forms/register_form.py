@@ -1,48 +1,27 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-import _tkinter
 import tkinter as tk
-from tkinter import ttk
-from common.transmission.secure_channel import establish_secure_channel_to_server
+from tkinter import *
 from tkinter import messagebox
-from common.message import MessageType
-from pprint import pprint
-from client.memory import current_user
-from common.transmission.secure_channel import get_ip
-import select
+from tkinter import ttk
+
+import client.memory
 import client.util.socket_listener
 from common.config import get_config
-import client.memory
-import socket
-from tkinter import *
-from tkinter import Toplevel
-import re
+from common.message import MessageType
+from common.transmission.secure_channel import get_ip
 
-""" 注册操作 """
+
 class RegisterForm(tk.Frame):
-    """ 打开事件监听 """
-    def socket_listener(self, data):
-        if data['type'] == MessageType.username_taken:
-            messagebox.showerror('Error', '用户名已被使用，请换一个')
-            return
-
-        if data['type'] == MessageType.register_successful:
-            messagebox.showinfo('Congratulations', '恭喜，注册成功，您成为第' + str(data['parameters'])+'个用户')
-            self.remove_socket_listener_and_close()
-            return
-
-    """ 关闭监听 """
-    def remove_socket_listener_and_close(self):
-        client.util.socket_listener.remove_listener(self.socket_listener)
-        self.master.destroy()
+    """ 注册操作 """
 
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
         self.sc = client.memory.sc
 
-        self.master.title("Uchat——注册")
+        self.master.title("SMchat——注册")
         master.resizable(width=False, height=False)
         master.geometry('480x500')
         # 画布
@@ -132,26 +111,41 @@ class RegisterForm(tk.Frame):
         client.util.socket_listener.add_listener(self.socket_listener)
         master.protocol("WM_DELETE_WINDOW", self.remove_socket_listener_and_close)
 
-    """" 注册操作 """
-    def do_register(self):
+    def socket_listener(self, data):
+        """ 打开事件监听 """
+        if data['type'] == MessageType.username_taken:
+            messagebox.showerror('Error', '用户名已被使用，请换一个')
+            return
 
+        if data['type'] == MessageType.register_successful:
+            messagebox.showinfo('Congratulations', '恭喜，注册成功，您成为第' + str(data['parameters']) + '个用户')
+            self.remove_socket_listener_and_close()
+            return
+
+    def remove_socket_listener_and_close(self):
+        """ 关闭监听 """
+        client.util.socket_listener.remove_listener(self.socket_listener)
+        self.master.destroy()
+
+    def do_register(self):
+        """" 注册操作 """
         username = self.var_user_name.get()
-       # print(type(username).__name__)
+        # print(type(username).__name__)
         password = self.var_user_pwd.get()
-        #print(type(password).__name__)
+        # print(type(password).__name__)
         password_confirmation = self.var_confirm_pwd.get()
         email = self.var_user_email.get()
-        #print(type(email).__name__)
+        # print(type(email).__name__)
         sex = self.var_user_sex.get()
-        #print(type(sex).__name__)
+        # print(type(sex).__name__)
         age = self.var_user_age.get()
-        #print(type(age).__name__)
+        # print(type(age).__name__)
 
         ip = get_ip()
-        #print(type(ip).__name__)
+        # print(type(ip).__name__)
         config = get_config()
         port = str((config['client']['client_port']))
-        #print(type(port).__name__)
+        # print(type(port).__name__)
 
         if not username:
             messagebox.showerror("Error", "用户名不能为空")
@@ -165,7 +159,7 @@ class RegisterForm(tk.Frame):
         if password != password_confirmation:
             messagebox.showerror("Error", "两次密码输入不一致")
             return
-        if not re.match(r'^[0-9a-zA-Z_]{0,19}@[0-9a-zA-Z]{1,13}\.[com,cn,net]{1,3}$',email):
+        if not re.match(r'^[0-9a-zA-Z_]{0,19}@[0-9a-zA-Z]{1,13}\.[com,cn,net]{1,3}$', email):
             messagebox.showerror("Error", "邮箱格式错误")
             return
         self.sc.send(MessageType.register, [username, password, email, ip, port, sex, age])
@@ -175,10 +169,10 @@ class RegisterForm(tk.Frame):
             context = f.read()
             sp = context.split()
             f.close()
-        with open(certname,'wb') as f:
+        with open(certname, 'wb') as f:
             f.write((str(self.var_user_name.get()) + ' ' + str(self.var_user_email.get()) + " " + str(sp[2])).encode())
             f.close()
-        #with open(certname, "rb") as f:
-            #a = f.read()
-           # print("content_after_write!!!:is:", a)
-            #f.close()
+        # with open(certname, "rb") as f:
+        # a = f.read()
+        # print("content_after_write!!!:is:", a)
+        # f.close()
