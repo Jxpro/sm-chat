@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-"""联系人列表 UI"""
-from tkinter import *
 
-""""联系人界面"""
+from tkinter import *
 
 
 class ContactItem(Frame):
+    """ 联系人列表项 """
 
     def __init__(self, parent, onclick):
         Frame.__init__(self, parent)

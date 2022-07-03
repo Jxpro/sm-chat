@@ -3,7 +3,6 @@
 
 from binascii import unhexlify
 from hashlib import md5 as _md5
-from pprint import pprint
 
 
 def long_to_bytes(val, endianness='big'):

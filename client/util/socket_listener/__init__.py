@@ -20,13 +20,11 @@ message_listeners = []
 def gen_last_message(obj):
     """得到最后一条消息的类型"""
     prefix = ''
-    # type 0 - 文字消息 1 - 图片消息
+    # type 0 - 文字消息
     if obj['target_type'] == 1:
         prefix = obj['sender_name'] + ':'
     if obj['message']['type'] == 0:
         return prefix + obj['message']['data'].replace('\n', ' ')
-    if obj['message']['type'] == 1:
-        return prefix + '[图片消息]'
 
 
 def socket_listener_thread(sc, tk_root):
@@ -93,29 +91,19 @@ def socket_listener_thread(sc, tk_root):
 
 def digest_message(data, update_unread_count=True):
     # 放入 chat_history
-    if data['target_id'] not in client.memory.chat_history[
-        data['target_type']]:
-        client.memory.chat_history[data['target_type']][
-            data['target_id']] = []
-    client.memory.chat_history[data['target_type']][
-        data['target_id']].append(data)
+    if data['target_id'] not in client.memory.chat_history[data['target_type']]:
+        client.memory.chat_history[data['target_type']][data['target_id']] = []
+    client.memory.chat_history[data['target_type']][data['target_id']].append(data)
     # 更新 last_message
-    client.memory.last_message[data['target_type']][
-        data['target_id']] = gen_last_message(
-        data)
+    client.memory.last_message[data['target_type']][data['target_id']] = gen_last_message(data)
     # 更新 last_message_timestamp
-    client.memory.last_message_timestamp[data['target_type']][
-        data['target_id']] = data[
-        'time']
-
+    client.memory.last_message_timestamp[data['target_type']][data['target_id']] = data['time']
     # 更新 unread_message_count
-    if data['target_id'] not in client.memory.unread_message_count[
-        data['target_type']]:
+    if data['target_id'] not in client.memory.unread_message_count[data['target_type']]:
         client.memory.unread_message_count[data['target_type']][
             data['target_id']] = 0
 
-    if data['target_id'] not in client.memory.window_instance[
-        data['target_type']]:
+    if data['target_id'] not in client.memory.window_instance[data['target_type']]:
         if update_unread_count:
             client.memory.unread_message_count[data['target_type']][
                 data['target_id']] += 1
@@ -124,8 +112,7 @@ def digest_message(data, update_unread_count=True):
 
     # 通知聊天窗口
     for item in message_listeners:
-        if item['target_type'] == data['target_type'] and item['target_id'] == \
-                data['target_id']:
+        if item['target_type'] == data['target_type'] and item['target_id'] == data['target_id']:
             item['func'](data)
 
 

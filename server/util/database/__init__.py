@@ -32,10 +32,8 @@ def get_user(user_id):
         return user
 
 
-"""获取user_id是被加方的所有行"""
-
-
 def get_pending_friend_request(user_id):
+    """获取user_id是被加方的所有行"""
     c = get_cursor()
     users = []
     rows = c.execute('SELECT from_user_id FROM friends WHERE to_user_id=? AND NOT accepted', [user_id]).fetchall()
@@ -46,10 +44,8 @@ def get_pending_friend_request(user_id):
     return users
 
 
-"""获取user_id是申请方的所有行"""
-
-
 def get_friends(user_id):
+    """获取user_id是申请方的所有行"""
     c = get_cursor()
     users = []
     rows = c.execute('SELECT to_user_id FROM friends WHERE from_user_id=? AND accepted', [user_id]).fetchall()

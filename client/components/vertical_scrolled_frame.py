@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-"""Tkinter可滚动框架"""
 import tkinter as tk
 from tkinter import *
 
 
 class VerticalScrolledFrame(Frame):
-    """一个真正工作的纯Tkinter可滚动框架!"""
+    """ 一个真正工作的纯Tkinter可滚动框架! """
 
     def __init__(self, parent, *args, **kw):
         Frame.__init__(self, parent, *args, **kw)

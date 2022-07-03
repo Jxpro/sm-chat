@@ -95,7 +95,6 @@ def _serialize_int(int):
 
 
 def _serialize_bool(value):
-    body = value
     return bytes([VAR_TYPE_INVERSE['bool']]) + pack('!L', 1) + bytes([1 if value else 0])
 
 
@@ -180,7 +179,7 @@ def _deserialize_list(bytes):
     # |--Body (self-evident length)--|--Body (self-evident length)--|--Body (self-evident length)--|...
     byte_reader = ByteArrayReader(bytes)
     ret = []
-    while (not byte_reader.empty()):
+    while not byte_reader.empty():
         body_type = byte_reader.read(1)[0]
         body = byte_reader.read(int.from_bytes(byte_reader.read(4), byteorder='big'))
         body = _deserialize_by_type[body_type](body)
@@ -194,7 +193,7 @@ def _deserialize_dict(bytes):
     # ...
     byte_reader = ByteArrayReader(bytes)
     ret = {}
-    while (not byte_reader.empty()):
+    while not byte_reader.empty():
         len_key = byte_reader.read(1)
         key = byte_reader.read(len_key[0])
 
