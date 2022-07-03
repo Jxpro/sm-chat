@@ -6,7 +6,7 @@
 """
 
 import sqlite3
-from pprint import pprint
+
 from server.memory import *
 
 conn = sqlite3.connect('server/database.db', isolation_level=None)
@@ -19,9 +19,10 @@ def get_cursor():
 def commit():
     return conn.commit()
 
+
 def get_user(user_id):
     c = get_cursor()
-    fields = ['id', 'username','ip','port']
+    fields = ['id', 'username', 'ip', 'port']
     row = c.execute('SELECT ' + ','.join(fields) + ' FROM users WHERE id=?', [user_id]).fetchall()
     if len(row) == 0:
         return None
@@ -32,6 +33,8 @@ def get_user(user_id):
 
 
 """获取user_id是被加方的所有行"""
+
+
 def get_pending_friend_request(user_id):
     c = get_cursor()
     users = []
@@ -42,7 +45,10 @@ def get_pending_friend_request(user_id):
         users.append(get_user(uid))
     return users
 
+
 """获取user_id是申请方的所有行"""
+
+
 def get_friends(user_id):
     c = get_cursor()
     users = []
@@ -116,7 +122,10 @@ def get_room_members(room_id):
         'SELECT user_id,username FROM room_user LEFT JOIN users ON users.id=user_id WHERE room_id=?',
         [room_id]).fetchall()))
 
+
 """将发送方向接收方发送的信息存入数据库,用于历史消息重发"""
+
+
 def add_to_chat_history(user_id, target_id, target_type, data, sent):
     c = get_cursor()
     c.execute('INSERT INTO chat_history (user_id,target_id,target_type,data,sent) VALUES (?,?,?,?,?)',
@@ -126,6 +135,8 @@ def add_to_chat_history(user_id, target_id, target_type, data, sent):
 
 # [[data:bytes,sent:int]]
 """获取某用户的历史消息"""
+
+
 def get_chat_history(user_id):
     c = get_cursor()
     ret = list(map(lambda x: [bytearray(x[0]), x[1]],
