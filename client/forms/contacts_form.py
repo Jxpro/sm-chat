@@ -24,7 +24,7 @@ class ContactsForm(tk.Frame):
         client.memory.contact_window.append(self)
         super().__init__(master)
         self.master = master
-        self.master.title(client.memory.current_user['username'] + "——联系人列表")
+        self.master.title(client.memory.current_user['username'] + " —— 联系人列表")
         master.resizable(width=False, height=False)
         master.geometry('400x640')
         # 滚动条＋消息列表画布
@@ -84,8 +84,8 @@ class ContactsForm(tk.Frame):
             self.refresh_contacts()
 
         if data['type'] == MessageType.incoming_friend_request:
-            result = messagebox.askyesnocancel("好友请求", data['parameters']['username'] + "请求加您为好友，是否同意？(按Cancel为下次再询问)");
-            if result == None:
+            result = messagebox.askyesnocancel("好友请求", data['parameters']['username'] + "请求加您为好友，是否同意？(按Cancel为下次再询问)")
+            if result is None:
                 return
             self.sc.send(MessageType.resolve_friend_request, [data['parameters']['id'], result])
 
@@ -132,11 +132,12 @@ class ContactsForm(tk.Frame):
         """处理删除好友的操作后"""
         id = data['id']
         for conn in self.contacts:
-            if (conn['id'] == id):
+            if conn['id'] == id:
                 self.contacts.remove(conn)
         self.refresh_contacts()
 
-    def on_frame_click(self, e):
+    @staticmethod
+    def on_frame_click(e):
         item_id = e.widget.item['id']
         if item_id in client.memory.window_instance[e.widget.item['type']]:
             client.memory.window_instance[e.widget.item['type']][item_id].master.deiconify()
@@ -147,14 +148,14 @@ class ContactsForm(tk.Frame):
     def on_add_friend(self):
         """ 添加好友 """
         result = simpledialog.askstring('添加好友', '请输入用户名')
-        if (not result):
+        if not result:
             return
         self.sc.send(MessageType.add_friend, result)
 
     def on_del_friend(self):
         """ 删除好友 """
         result = simpledialog.askstring('删除好友', '请输入用户名')
-        if (not result):
+        if not result:
             return
         self.sc.send(MessageType.del_friend, result)
         # print(MessageType.del_friend)
@@ -166,14 +167,14 @@ class ContactsForm(tk.Frame):
     def on_add_room(self):
         """ 添加群 """
         result = simpledialog.askinteger('添加群', '请输入群号')
-        if (not result):
+        if not result:
             return
         self.sc.send(MessageType.join_room, result)
 
     def on_create_room(self):
         """" 创建群 """
         result = simpledialog.askstring('创建群', '请输入群名称')
-        if (not result):
+        if not result:
             return
         self.sc.send(MessageType.create_room, result)
 
@@ -202,16 +203,6 @@ class ContactsForm(tk.Frame):
         if not self.bundle_process_done:
             return
 
-        def compare(item1, item2):
-            ts1 = client.memory.last_message_timestamp[item1['type']].get(item1['id'], 0)
-            ts2 = client.memory.last_message_timestamp[item2['type']].get(item2['id'], 0)
-            if ts1 < ts2:
-                return -1
-            elif ts1 > ts2:
-                return 1
-            else:
-                return 0
-
         for pack_obj in self.pack_objs:
             pack_obj.pack_forget()
             pack_obj.destroy()
@@ -225,12 +216,12 @@ class ContactsForm(tk.Frame):
             contact.item = item
 
             contact.bind("<Button>", self.on_frame_click)
-            if (item['type'] == 0):
+            if item['type'] == 0:
                 # 联系人
                 contact.title.config(text=item['username'] + (' (在线)' if item['online'] else ' (离线)'))
                 contact.title.config(fg='blue' if item['online'] else '#505050', )
                 contact.friend_ip.config(text=item['ip'] + ':' + item['port'])
-            if (item['type'] == 1):
+            if item['type'] == 1:
                 # 群
                 contact.title.config(text='[群:' + str(item['id']) + '] ' + item['room_name'])
                 contact.title.config(fg='green')
