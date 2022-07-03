@@ -23,7 +23,10 @@ class RegisterForm(tk.Frame):
 
         self.master.title("SMchat——注册")
         master.resizable(width=False, height=False)
-        master.geometry('480x500')
+        # 使窗口居中
+        width = self.master.winfo_screenwidth()
+        height = self.master.winfo_screenheight()
+        self.master.geometry("%dx%d+%d+%d" % (480, 500, (width - 480) / 2, (height - 500) / 2))
         # 画布
         self.canvas = tk.Canvas(self.master, width=480, height=500)
         self.image_file = tk.PhotoImage(file='client/forms/images/register_bg.gif')
