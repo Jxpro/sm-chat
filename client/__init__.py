@@ -5,13 +5,15 @@
 import _thread
 import tkinter as tk
 from tkinter import messagebox
+
 import client.memory
 import client.util.socket_listener
 from client.forms.login_form import LoginForm
 from common.transmission.secure_channel import establish_secure_channel_to_server
 
-"""运行客户端开启一个新的线程"""
+
 def run():
+    """运行客户端开启一个新的线程"""
     root = tk.Tk()
     client.memory.tk_root = root
     try:
