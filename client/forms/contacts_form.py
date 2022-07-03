@@ -123,6 +123,7 @@ class ContactsForm(tk.Frame):
 
     def handle_new_contact(self, data):
         """处理新的联系人"""
+        print("--- handle new contact ---")
         data['last_timestamp'] = 0
         data['last_message'] = '(没有消息)'
         self.contacts.insert(0, data)
@@ -130,6 +131,7 @@ class ContactsForm(tk.Frame):
 
     def handle_del_contact(self, data):
         """处理删除好友的操作后"""
+        print("--- handle del contact ---")
         id = data['id']
         for conn in self.contacts:
             if conn['id'] == id:
@@ -138,6 +140,7 @@ class ContactsForm(tk.Frame):
 
     @staticmethod
     def on_frame_click(e):
+        print("--- on frame click ---")
         item_id = e.widget.item['id']
         if item_id in client.memory.window_instance[e.widget.item['type']]:
             client.memory.window_instance[e.widget.item['type']][item_id].master.deiconify()
@@ -147,6 +150,7 @@ class ContactsForm(tk.Frame):
 
     def on_add_friend(self):
         """ 添加好友 """
+        print("--- on add friend ---")
         result = simpledialog.askstring('添加好友', '请输入用户名')
         if not result:
             return
@@ -154,18 +158,16 @@ class ContactsForm(tk.Frame):
 
     def on_del_friend(self):
         """ 删除好友 """
+        print("--- on del friend ---")
         result = simpledialog.askstring('删除好友', '请输入用户名')
         if not result:
             return
         self.sc.send(MessageType.del_friend, result)
         # print(MessageType.del_friend)
 
-    def on_user_information(self):
-        """ 查看用户信息 """
-        return
-
     def on_add_room(self):
         """ 添加群 """
+        print('--- on add room ---')
         result = simpledialog.askinteger('添加群', '请输入群号')
         if not result:
             return
@@ -173,6 +175,7 @@ class ContactsForm(tk.Frame):
 
     def on_create_room(self):
         """" 创建群 """
+        print("--- on create room ---")
         result = simpledialog.askstring('创建群', '请输入群名称')
         if not result:
             return
@@ -186,6 +189,7 @@ class ContactsForm(tk.Frame):
 
     def try_open_user_id(self, id, name, username):
         """ 查看用户ID """
+        print('--- try open user id ---')
         for i in range(0, len(self.pack_objs)):
             frame = self.pack_objs[i]
             if frame.item['id'] == id and frame.item['type'] == 0:
@@ -199,6 +203,7 @@ class ContactsForm(tk.Frame):
 
     def refresh_contacts(self):
         """更新列表界面"""
+        print('--- refresh_contacts ---')
         # print("self.contacts是一个列表，里面很多用户字典")
         if not self.bundle_process_done:
             return
