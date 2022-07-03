@@ -6,7 +6,6 @@ import os
 import tkinter as tk
 from tkinter import *
 from tkinter import colorchooser
-from tkinter import filedialog
 from tkinter import simpledialog
 from tkinter.scrolledtext import ScrolledText
 
@@ -46,19 +45,10 @@ class ChatForm(tk.Frame):
         self.input_frame = tk.Frame(self.right_frame, bg='#63d5eb')
         self.input_textbox = ScrolledText(self.right_frame, bg='#63d5eb', font=("楷书", 16), height=5)
         self.input_textbox.bind("<Control-Return>", self.send_message)
-        self.input_textbox.bind_all('<Key>', self.apply_font_change)
         self.send_btn = tk.Button(self.input_frame, text='发送消息(Ctrl+Enter)', font=("仿宋", 16, 'bold'), fg="black",
                                   bg="#35d1e9", activebackground="#6cdcf0", relief=GROOVE, command=self.send_message)
         self.send_btn.pack(side=RIGHT, expand=False)
-        self.font_btn = tk.Button(self.input_frame, text='字体颜色', font=("仿宋", 16, 'bold'), fg="black", bg="#35d1e9",
-                                  activebackground="#6cdcf0", relief=GROOVE, command=self.choose_color)
-        self.font_btn.pack(side=LEFT, expand=False)
-        self.font_btn = tk.Button(self.input_frame, text='字体大小', font=("仿宋", 16, 'bold'), fg="black", bg="#35d1e9",
-                                  activebackground="#6cdcf0", relief=GROOVE, command=self.choose_font_size)
-        self.font_btn.pack(side=LEFT, expand=False)
-        self.image_btn = tk.Button(self.input_frame, text='发送文件', font=("仿宋", 16, 'bold'), fg="black", bg="#35d1e9",
-                                   activebackground="#6cdcf0", relief=GROOVE, command=self.send_image)
-        self.image_btn.pack(side=LEFT, expand=False)
+
         self.chat_box = ScrolledText(self.right_frame, bg='#70d5eb')
         self.input_frame.pack(side=BOTTOM, fill=X, expand=False)
         self.input_textbox.pack(side=BOTTOM, fill=X, expand=False, padx=(0, 0), pady=(0, 0))
@@ -160,39 +150,3 @@ class ChatForm(tk.Frame):
                       })
         self.input_textbox.delete("1.0", END)
         return 'break'
-
-    def choose_color(self):
-        """ 选择字体颜色 """
-        _, self.font_color = colorchooser.askcolor(initialcolor=self.font_color)
-        self.apply_font_change(None)
-
-    def choose_font_size(self):
-        """ 选择字体大小 """
-        result = simpledialog.askinteger("设置", "请输入字体大小", initialvalue=self.font_size)
-        if result is None:
-            return
-        self.font_size = result
-        self.apply_font_change(None)
-
-    def apply_font_change(self, _):
-        """" 更新字体 """
-        try:
-            self.input_textbox.tag_config('new', foreground=self.font_color, font=(None, self.font_size))
-            self.input_textbox.tag_add('new', '1.0', END)
-        except:
-            pass
-
-    def send_image(self):
-        """" 发送图片 """
-        filename = filedialog.askopenfilename(filetypes=[("Image Files",
-                                                          ["*.jpg", "*.jpeg", "*.png", "*.gif", "*.JPG", "*.JPEG",
-                                                           "*.PNG", "*.GIF"]),
-                                                         ("All Files", ["*.*"])])
-        if filename is None or filename == '':
-            return
-        with open(filename, "rb") as imageFile:
-            f = imageFile.read()
-            b = bytearray(f)
-            self.sc.send(MessageType.send_message,
-                         {'target_type': self.target['type'], 'target_id': self.target['id'],
-                          'message': {'type': 1, 'data': b}})
