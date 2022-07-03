@@ -10,30 +10,34 @@
 """
 
 import socket
-from common.config import get_config
-import common.transmission.secure_channel
-from server.event_handler import handle_event
-from server.memory import *
-import server.memory
-from common.message import MessageType
-from server.broadcast import broadcast
-import select
-from server.util import database
-from pprint import pprint
 import struct
 import sys
 import traceback
-from common.cryptography import crypt
+from pprint import pprint
 
-"""生成证书"""
+import select
+
+import common.transmission.secure_channel
+import server.memory
+from common.config import get_config
+from common.cryptography import crypt
+from common.message import MessageType
+from server.broadcast import broadcast
+from server.event_handler import handle_event
+from server.memory import *
+from server.util import database
+
+
 def gen_cert():
-    crypt.gen_secret()
-    with open("public.pem","rb") as f:
+    """生成证书"""
+    crypt.gen_secret("admin")
+    with open("public.pem", "rb") as f:
         public = f.read()
         f.close()
-    with open("admin_cert.pem","wb") as f:
-        f.write("server ahahahaha@qq.com ".encode()+public)
+    with open("admin_cert.pem", "wb") as f:
+        f.write("server ahahahaha@qq.com ".encode() + public)
         f.close()
+
 
 def run():
     gen_cert()
@@ -57,7 +61,7 @@ def run():
 
             if i == s:
                 # 监听socket为readable，说明有新的客户要连入
-                sc = common.transmission. 	secure_channel.accept_client_to_secure_channel(s)
+                sc = common.transmission.secure_channel.accept_client_to_secure_channel(s)
                 socket_to_sc[sc.socket] = sc
                 scs.append(sc)
                 bytes_to_receive[sc] = 0

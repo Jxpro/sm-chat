@@ -105,7 +105,7 @@ def establish_secure_channel_to_server():
     certname = ip + "_cert.pem"
     if not os.path.exists(certname):
         # 生成私钥公钥和证书
-        crypt.gen_secret()
+        crypt.gen_secret("client")
         f = open('public.pem', 'rb')
         public = f.read()
         f.close()
@@ -119,9 +119,9 @@ def establish_secure_channel_to_server():
         f.close()
     s.send(client_cert)
 
-    their_secret = crypt.getpk_from_cert(server_cert)
+    their_secret = crypt.get_pk_from_cert(server_cert)
     # 计算出共同密钥
-    shared_secret = crypt.get_shared_secret(their_secret)
+    shared_secret = crypt.get_shared_secret(their_secret, "client")
 
     sc = SecureChannel(s, shared_secret)
 
@@ -148,8 +148,8 @@ def accept_client_to_secure_channel(socket):
         f.close()
 
     # 计算出共享密钥
-    their_secret = crypt.getpk_from_cert(client_cert)
-    shared_secert = crypt.get_shared_secret(their_secret)
+    their_secret = crypt.get_pk_from_cert(client_cert)
+    shared_secert = crypt.get_shared_secret(their_secret, "admin")
     sc = SecureChannel(conn, shared_secert)
 
     return sc
