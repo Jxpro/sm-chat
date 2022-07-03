@@ -79,9 +79,6 @@ def socket_listener_thread(sc, tk_root):
                         messagebox.showerror("出错了", '您的账户在别处登入')
                         client.memory.tk_root.destroy()
 
-                    if data['type'] == MessageType.server_echo:
-                        pprint(['server echo', data['parameters']])
-
                     # 处理on_new_message
                     if data['type'] == MessageType.on_new_message:
                         digest_message(data['parameters'])
