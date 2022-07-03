@@ -173,7 +173,8 @@ class RegisterForm(tk.Frame):
             sp = context.split()
             f.close()
         with open(certname, 'wb') as f:
-            f.write((str(self.var_user_name.get()) + ' ' + str(self.var_user_email.get()) + " " + str(sp[2])).encode())
+            f.write(
+                (str(self.var_user_name.get()) + ' ' + str(self.var_user_email.get()) + " " + sp[2].decode()).encode())
             f.close()
         # with open(certname, "rb") as f:
         # a = f.read()
