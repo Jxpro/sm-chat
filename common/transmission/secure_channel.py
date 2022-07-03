@@ -6,22 +6,24 @@
 |--Length of Message Body(4Bytes)--|--Length of AES padding (1Byte)--|--AES IV (16Bytes)--|--MAC (32Bytes)--|--Message Body (CSON)--|
 """
 
+import hashlib
 import math
 import os
 import socket
 import struct
-#from Crypto.Cipher import AES
+from pprint import pprint
+
 from Cryptodome.Cipher import AES
-import hashlib
+
 from common.config import get_config
 from common.cryptography import crypt
 from common.message import serialize_message, deserialize_message, ByteArrayReader
-from common.util import long_to_bytes
-from pprint import pprint
-from server.util import database
 
-"""建立安全信道"""
+
 class SecureChannel:
+    # TODO: 将AES改为SM4
+    # TODO: 将MD5改为SM3
+    """建立安全信道"""
 
     def __init__(self, socket, shared_secret):
         socket.setblocking(0)
@@ -51,11 +53,10 @@ class SecureChannel:
         return
 
     def on_data(self, data_array):
-
-        """用select循环socket.recv，当收到一个完整的数据块后（收到后length_of_encrypted_message+1+16+32个字节后），
+        """
+        用select循环socket.recv，当收到一个完整的数据块后（收到后length_of_encrypted_message+1+16+32个字节后），
         把 bytes([padding_n]) + iv1 + +mac + encrypted_message 传给本函数
-		"""
-
+        """
         br = ByteArrayReader(data_array)
 
         # pprint(['recv', 'first_4_bytes', first_4_bytes, length_of_encrypted_message])
@@ -153,8 +154,9 @@ def accept_client_to_secure_channel(socket):
 
     return sc
 
-"""获取本机IP"""
+
 def get_ip():
+    """获取本机IP"""
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(('8.8.8.8', 80))
     ip = s.getsockname()[0]
