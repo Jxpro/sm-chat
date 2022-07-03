@@ -10,7 +10,6 @@ from tkinter import *
 from tkinter.scrolledtext import ScrolledText
 
 import filetype
-from PIL import ImageTk
 
 import client.memory
 from client.util import socket_listener
@@ -32,7 +31,10 @@ class ChatForm(tk.Frame):
         client.memory.unread_message_count[self.target['type']][self.target['id']] = 0
         client.memory.contact_window[0].refresh_contacts()
         master.resizable(width=False, height=False)
-        master.geometry('580x500')
+        # 使窗口居中
+        width = self.master.winfo_screenwidth()
+        height = self.master.winfo_screenheight()
+        self.master.geometry("%dx%d+%d+%d" % (480, 500, (width - 480) / 2.5, (height - 500) / 2.5))
         self.sc = client.memory.sc
         # 私人聊天
         if self.target['type'] == 0:
@@ -41,14 +43,14 @@ class ChatForm(tk.Frame):
         self.right_frame = tk.Frame(self)
 
         self.right_frame.pack(side=LEFT, expand=True, fill=BOTH)
-        self.input_frame = tk.Frame(self.right_frame, bg='#63d5eb')
-        self.input_textbox = ScrolledText(self.right_frame, bg='#63d5eb', font=("楷书", 16), height=5)
+        self.input_frame = tk.Frame(self.right_frame, bg='#f5f3f2')
+        self.input_textbox = ScrolledText(self.right_frame, bg='#f5f3f2', font=("楷书", 16), height=5)
         self.input_textbox.bind("<Control-Return>", self.send_message)
-        self.send_btn = tk.Button(self.input_frame, text='发送消息(Ctrl+Enter)', font=("仿宋", 16, 'bold'), fg="black",
-                                  bg="#35d1e9", activebackground="#6cdcf0", relief=GROOVE, command=self.send_message)
+        self.send_btn = tk.Button(self.input_frame, text='发送消息(Ctrl+Enter)', font=("仿宋", 14, 'bold'), fg="black",
+                                  bg="#f5f3f2", activebackground="#efefef", relief=GROOVE, command=self.send_message)
         self.send_btn.pack(side=RIGHT, expand=False)
 
-        self.chat_box = ScrolledText(self.right_frame, bg='#70d5eb')
+        self.chat_box = ScrolledText(self.right_frame, bg='#d4dde1')
         self.input_frame.pack(side=BOTTOM, fill=X, expand=False)
         self.input_textbox.pack(side=BOTTOM, fill=X, expand=False, padx=(0, 0), pady=(0, 0))
         self.chat_box.pack(side=BOTTOM, fill=BOTH, expand=True)
@@ -112,7 +114,7 @@ class ChatForm(tk.Frame):
         self.append_to_chat_box(data['sender_name'] + "  " + time + '\n',
                                 ('me' if client.memory.current_user['id'] == data[
                                     'sender_id'] else 'them'))
-        # type 0 - 文字消息 1 - 图片消息
+        # type 0 - 文字消息
         if data['message']['type'] == 0:
             self.tag_i += 1
             self.chat_box.tag_config('new' + str(self.tag_i),
@@ -122,10 +124,6 @@ class ChatForm(tk.Frame):
                                      font=(None, data['message']['fontsize']))
             self.append_to_chat_box(data['message']['data'] + '\n',
                                     'new' + str(self.tag_i))
-        if data['message']['type'] == 1:
-            client.memory.tk_img_ref.append(ImageTk.PhotoImage(data=data['message']['data']))
-            self.chat_box.image_create(END, image=client.memory.tk_img_ref[-1], padx=16, pady=5)
-            self.append_to_chat_box('\n', '')
 
     def append_to_chat_box(self, message, tags):
         """ 附加聊天框 """
