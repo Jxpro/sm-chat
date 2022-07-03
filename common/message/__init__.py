@@ -4,19 +4,19 @@
 """
     把变量等中变成可存储或传输的过程称之为序列化
     每个序列化片段的格式：
-    |--VAR_TYPE(1 Byte)--|--DATA_LEN(4 Bytes)--|--DATA--|
-    |-- 4 Byte messageType --|-- Array of parameters --|
+    |-- 1 Byte messageType --|-- Array of parameters --|
     for each item in array of params
     |-- 1 Byte Type of params --|-- 4 Bytes Length of body --|-- N Byte Body--|
 """
 
-import socket
-from pprint import pprint
-from common.util import long_to_bytes
 import enum
 from struct import pack, unpack
 
+from common.util import long_to_bytes
+
 """ 定义消息类型 """
+
+
 class MessageType(enum.IntEnum):
     # === Client Action 1-100
     # [username, password]
@@ -72,8 +72,9 @@ class MessageType(enum.IntEnum):
     # msg:str
     general_msg = 204
 
-""" 获取消息类型 """
+
 def _get_message_type_from_value(value):
+    """ 获取消息类型 """
     return MessageType(value)
 
 
@@ -99,24 +100,30 @@ VAR_TYPE_INVERSE = {
 
 """ 数据类型序列化操作 """
 
+
 def _serialize_int(int):
     body = long_to_bytes(int)
     return bytes([VAR_TYPE_INVERSE['int']]) + pack('!L', len(body)) + body
+
 
 def _serialize_bool(value):
     body = value
     return bytes([VAR_TYPE_INVERSE['bool']]) + pack('!L', 1) + bytes([1 if value else 0])
 
+
 def _serialize_float(float):
     body = pack('f', float)
     return bytes([VAR_TYPE_INVERSE['float']]) + pack('!L', len(body)) + body
+
 
 def _serialize_str(str):
     body = str.encode()
     return bytes([VAR_TYPE_INVERSE['str']]) + pack('!L', len(body)) + body
 
+
 def _serialize_bytes(body):
     return bytes([VAR_TYPE_INVERSE['bytearray']]) + pack('!L', len(body)) + body
+
 
 def _serialize_list(list):
     # |--Body (self-evident length)--|--Body (self-evident length)--|--Body (self-evident length)--|...
@@ -124,6 +131,7 @@ def _serialize_list(list):
     for i in range(0, len(list)):
         body += _serialize_any(list[i])
     return bytes([VAR_TYPE_INVERSE['list']]) + pack('!L', len(body)) + body
+
 
 def _serialize_dict(dict):
     # |--Length of Key(1Byte)--|--Key--|--Body (self-evident length)--|
@@ -146,31 +154,39 @@ def _serialize_dict(dict):
 _serialize_by_type = [None, _serialize_int, _serialize_float, _serialize_str, _serialize_list, _serialize_dict,
                       _serialize_bool, _serialize_bytes]
 
+
 def _serialize_any(obj):
     if obj is None:
         return bytearray([0])
     type_byte = VAR_TYPE_INVERSE[type(obj).__name__]
     return _serialize_by_type[type_byte](obj)
 
+
 def serialize_message(message_type, parameters):
     result = bytes([message_type.value])
     result += _serialize_any(parameters)
     return result
 
+
 def _deserialize_int(bytes):
     return int.from_bytes(bytes, 'big')
+
 
 def _deserialize_bool(value):
     return True if value[0] else False
 
+
 def _deserialize_float(bytes):
     return unpack('!f', bytes)[0]
+
 
 def _deserialize_str(bytes):
     return bytes.decode()
 
+
 def _deserialize_bytes(body):
     return bytearray(body)
+
 
 def _deserialize_list(bytes):
     # |--Body (self-evident length)--|--Body (self-evident length)--|--Body (self-evident length)--|...
@@ -182,6 +198,7 @@ def _deserialize_list(bytes):
         body = _deserialize_by_type[body_type](body)
         ret.append(body)
     return ret
+
 
 def _deserialize_dict(bytes):
     # |--Length of Key(1Byte)--|--Key--|--Body (self-evident length)--|
@@ -199,7 +216,10 @@ def _deserialize_dict(bytes):
         ret[key.decode()] = body
     return ret
 
-_deserialize_by_type = [None, _deserialize_int, _deserialize_float, _deserialize_str, _deserialize_list, _deserialize_dict, _deserialize_bool, _deserialize_bytes]
+
+_deserialize_by_type = [None, _deserialize_int, _deserialize_float, _deserialize_str, _deserialize_list,
+                        _deserialize_dict, _deserialize_bool, _deserialize_bytes]
+
 
 def _deserialize_any(bytes):
     byte_reader = ByteArrayReader(bytes)
@@ -211,6 +231,7 @@ def _deserialize_any(bytes):
     body_len = int.from_bytes(byte_reader.read(4), 'big')
     return _deserialize_by_type[type](byte_reader.read(body_len))
 
+
 def deserialize_message(data):
     ret = {}
     byte_reader = ByteArrayReader(data)
@@ -220,7 +241,10 @@ def deserialize_message(data):
 
     return ret
 
+
 """读取一段bytearray，并移动数组指针"""
+
+
 class ByteArrayReader:
 
     def __init__(self, byte_array):
