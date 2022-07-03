@@ -1,52 +1,26 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-"""登录界面"""
-import _tkinter
-import sys
 import tkinter as tk
-from tkinter import messagebox
-from common.message import MessageType
-from pprint import pprint
-import client.memory
-from client.forms.register_form import RegisterForm
-from client.forms.contacts_form import ContactsForm
-import select
-import _thread
-import os
 from tkinter import *
 from tkinter import Toplevel
+from tkinter import messagebox
+
+import client.memory
 import client.util.socket_listener
+from client.forms.contacts_form import ContactsForm
+from client.forms.register_form import RegisterForm
+from common.message import MessageType
 
-"""登录界面"""
+
 class LoginForm(tk.Frame):
-    """ 关闭端口监听 """
-    def remove_socket_listener_and_close(self):
-        client.util.socket_listener.remove_listener(self.socket_listener)
-        self.master.destroy()
-
-    """" 关闭窗口 """
-    def destroy_window(self):
-        client.memory.tk_root.destroy()
-
-    """ 开启监听 """
-    def socket_listener(self, data):
-        if data['type'] == MessageType.login_failed:
-            messagebox.showerror('Error', '登入失败，请检查用户名密码')
-            return
-
-        if data['type'] == MessageType.login_successful:
-            client.memory.current_user = data['parameters']
-            self.remove_socket_listener_and_close()
-            contacts = Toplevel(client.memory.tk_root, takefocus=True)
-            ContactsForm(contacts)
-            return
+    """登录界面"""
 
     def __init__(self, master=None):
         """创建主窗口用来容纳其他组件"""
         super().__init__(master)
         self.master = master
-        self.master.title("Uchat——登录安全即时通信系统")
+        self.master.title("SMchat——基于国密算法的安全即时通信系统")
         self.master.resizable(width=False, height=False)
         self.master.geometry('480x300')
         # 画布放置图片
@@ -83,7 +57,29 @@ class LoginForm(tk.Frame):
         self.sc = client.memory.sc
         client.util.socket_listener.add_listener(self.socket_listener)
 
-    """ 登陆操作 """
+    def remove_socket_listener_and_close(self):
+        """ 关闭端口监听 """
+        client.util.socket_listener.remove_listener(self.socket_listener)
+        self.master.destroy()
+
+    @staticmethod
+    def destroy_window():
+        """" 关闭窗口 """
+        client.memory.tk_root.destroy()
+
+    def socket_listener(self, data):
+        """ 开启监听 """
+        if data['type'] == MessageType.login_failed:
+            messagebox.showerror('Error', '登入失败，请检查用户名密码')
+            return
+
+        if data['type'] == MessageType.login_successful:
+            client.memory.current_user = data['parameters']
+            self.remove_socket_listener_and_close()
+            contacts = Toplevel(client.memory.tk_root, takefocus=True)
+            ContactsForm(contacts)
+            return
+
     def do_login(self):
         """登录操作若为空则提示用户错误"""
         username = self.var_user_name.get()
@@ -96,7 +92,8 @@ class LoginForm(tk.Frame):
             return
         self.sc.send(MessageType.login, [username, password])
 
-    """ 转到注册界面 """
-    def show_register(self):
+    @staticmethod
+    def show_register():
+        """ 转到注册界面 """
         register_form = Toplevel()
         RegisterForm(register_form)
