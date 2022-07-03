@@ -155,12 +155,6 @@ class ContactsForm(tk.Frame):
         self.sc.send(MessageType.del_friend, result)
         # print(MessageType.del_friend)
 
-    class Event:
-        widget = None
-
-        def __init__(self, widget):
-            self.widget = widget
-
     def refresh_contacts(self):
         """更新列表界面"""
         print('--- refresh_contacts ---')
