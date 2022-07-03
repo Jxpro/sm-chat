@@ -5,10 +5,9 @@
 
 from common.message import MessageType
 from common.util import md5
-from server.util import database
-from server.util import add_target_type
 from server.memory import *
-from pprint import pprint
+from server.util import add_target_type
+from server.util import database
 
 
 def run(sc, parameters):

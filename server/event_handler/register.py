@@ -8,7 +8,7 @@
 
 from common.message import MessageType
 from common.util import md5
-
+# TODO: MD5改为SM3
 from server.util import database
 
 
