@@ -17,7 +17,7 @@ def gen_secret(prefix=""):
     secret = prime.generate_big_prime(12)
     my_secret = base ** secret % modulus
 
-    with open(prefix + "private.pem", "wb") as f:
+    with open(prefix + "_private.pem", "wb") as f:
         f.write(str(secret).encode())
         f.close()
     with open("public.pem", "wb") as f:
@@ -31,7 +31,7 @@ def get_shared_secret(their_secret, prefix=""):
         pub = f.read()
         f.close()
 
-    f = open(prefix + "private.pem", "rb")
+    f = open(prefix + "_private.pem", "rb")
     secret = int(f.read())
     f.close()
     return hashlib.sha256(long_to_bytes(int(their_secret) ** secret % modulus)).digest()
