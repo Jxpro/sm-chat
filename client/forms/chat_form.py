@@ -2,118 +2,29 @@
 # -*- coding:utf-8 -*-
 
 """"聊天界面及处理与聊天相关的事件"""
+import os
 import tkinter as tk
 from tkinter import *
-import client.memory
-from client.util.socket_listener import *
-from tkinter.scrolledtext import ScrolledText
 from tkinter import colorchooser
-from tkinter import simpledialog
 from tkinter import filedialog
-from PIL import Image, ImageTk
-from io import BytesIO
-from client.util import socket_listener
-import binascii
-import time
+from tkinter import simpledialog
+from tkinter.scrolledtext import ScrolledText
+
 import filetype
-import os
+from PIL import ImageTk
+
+import client.memory
+from client.util import socket_listener
+from client.util.socket_listener import *
 
 """创建聊天框"""
-class ChatForm(tk.Frame):
 
+
+class ChatForm(tk.Frame):
     font_color = "#000000"
     font_size = 16
     user_list = []
     tag_i = 0
-
-    """将监听事件移除并关闭该窗口"""
-    def remove_listener_and_close(self):
-        remove_message_listener(self.message_listener)
-        client.util.socket_listener.remove_listener(self.socket_listener)
-        self.master.destroy()
-        if self.target['id'] in client.memory.window_instance[self.target['type']]:
-            del client.memory.window_instance[self.target['type']][self.target['id']]
-
-    """定义监听事件"""
-    def message_listener(self, data):
-        self.digest_message(data)
-
-    """监听socket传来的数据"""
-    def socket_listener(self, data):
-        init_time = int(time.time())
-        dirname = "send_msg_log"
-        filename = str(init_time)
-        dir_flag = os.path.exists(dirname)
-        if dir_flag == False:
-            os.mkdir(dirname)
-        if data['parameters']['message']['type'] == 1:
-            with open(dirname + '/' + filename, 'wb') as f:
-                contents = data['parameters']['message']['data']
-                f.write(contents)
-                f.close()
-            with open(dirname + '/' + filename, 'rb') as f:
-                file_format = filetype.guess(dirname + '/' + filename)
-                file_format = file_format.extension
-                if file_format == None:
-                    file_format = "txt"
-                f.close()
-            os.rename(dirname + '/' + filename, (str(dirname + '/' + filename) + '_.' + file_format))
-        if data['type'] == MessageType.query_room_users_result:
-            if data['parameters'][1] != self.target['id']:
-                return
-            self.user_list = data['parameters'][0]
-            self.refresh_user_listbox()
-        if data['type'] == MessageType.room_user_on_off_line:
-            if data['parameters'][0] != self.target['id']:
-                return
-            for i in range(0, len(self.user_list)):
-                if self.user_list[i][0] == data['parameters'][1]:
-                    self.user_list[i][2] = data['parameters'][2]
-            self.refresh_user_listbox()
-
-    """更新好友列表"""
-    def refresh_user_listbox(self):
-        self.user_listbox.delete(0, END)
-        self.user_list.sort(key=lambda x: x[2])
-        for user in self.user_list:
-            self.user_listbox.insert(0, user[1] + ("(在线)" if user[2] else "(离线)"))
-            self.user_listbox.itemconfig(0, {'fg': ("blue" if user[2] else "#505050")})
-
-    """处理消息并将其展示出来"""
-    def digest_message(self, data):
-        time = datetime.datetime.fromtimestamp(
-            int(data['time']) / 1000
-        ).strftime('%Y-%m-%d %H:%M:%S')
-        self.append_to_chat_box(data['sender_name'] + "  " + time + '\n',
-                                ('me' if client.memory.current_user['id'] == data[
-                                    'sender_id'] else 'them'))
-        # type 0 - 文字消息 1 - 图片消息
-        if data['message']['type'] == 0:
-            self.tag_i += 1
-            self.chat_box.tag_config('new' + str(self.tag_i),
-                                     lmargin1=16,
-                                     lmargin2=16,
-                                     foreground=data['message']['fontcolor'],
-                                     font=(None, data['message']['fontsize']))
-            self.append_to_chat_box(data['message']['data'] + '\n',
-                                    'new' + str(self.tag_i))
-        if data['message']['type'] == 1:
-            client.memory.tk_img_ref.append(ImageTk.PhotoImage(data=data['message']['data']))
-            self.chat_box.image_create(END, image=client.memory.tk_img_ref[-1], padx=16, pady=5)
-            self.append_to_chat_box('\n', '')
-
-    """ 双击聊天框 """
-    def user_listbox_double_click(self, _):
-        if len(self.user_listbox.curselection()) == 0:
-            return None
-        index = self.user_listbox.curselection()[0]
-        selected_user_id = self.user_list[len(self.user_list) - 1 - index][0]
-        selected_user_username = self.user_list[len(self.user_list) - 1 - index][3]
-        if selected_user_id == client.memory.current_user['id']:
-            return
-        client.memory.contact_window[0].try_open_user_id(selected_user_id,
-                                                         selected_user_username)
-        return
 
     def __init__(self, target, master=None):
         super().__init__(master)
@@ -146,7 +57,7 @@ class ChatForm(tk.Frame):
         self.input_textbox.bind("<Control-Return>", self.send_message)
         self.input_textbox.bind_all('<Key>', self.apply_font_change)
         self.send_btn = tk.Button(self.input_frame, text='发送消息(Ctrl+Enter)', font=("仿宋", 16, 'bold'), fg="black",
-                                  bg="#35d1e9",activebackground="#6cdcf0", relief=GROOVE, command=self.send_message)
+                                  bg="#35d1e9", activebackground="#6cdcf0", relief=GROOVE, command=self.send_message)
         self.send_btn.pack(side=RIGHT, expand=False)
         self.font_btn = tk.Button(self.input_frame, text='字体颜色', font=("仿宋", 16, 'bold'), fg="black", bg="#35d1e9",
                                   activebackground="#6cdcf0", relief=GROOVE, command=self.choose_color)
@@ -180,14 +91,103 @@ class ChatForm(tk.Frame):
 
             self.append_to_chat_box('- 以上是历史消息 -\n', 'system')
 
-    """ 附加聊天框 """
+    def remove_listener_and_close(self):
+        """将监听事件移除并关闭该窗口"""
+        remove_message_listener(self.message_listener)
+        client.util.socket_listener.remove_listener(self.socket_listener)
+        self.master.destroy()
+        if self.target['id'] in client.memory.window_instance[self.target['type']]:
+            del client.memory.window_instance[self.target['type']][self.target['id']]
+
+    def message_listener(self, data):
+        """定义监听事件"""
+        self.digest_message(data)
+
+    def socket_listener(self, data):
+        """监听socket传来的数据"""
+        init_time = int(time.time())
+        dirname = "send_msg_log"
+        filename = str(init_time)
+        dir_flag = os.path.exists(dirname)
+        if not dir_flag:
+            os.mkdir(dirname)
+        if data['parameters']['message']['type'] == 1:
+            with open(dirname + '/' + filename, 'wb') as f:
+                contents = data['parameters']['message']['data']
+                f.write(contents)
+                f.close()
+            with open(dirname + '/' + filename, 'rb') as f:
+                file_format = filetype.guess(dirname + '/' + filename)
+                file_format = file_format.extension
+                if file_format is None:
+                    file_format = "txt"
+                f.close()
+            os.rename(dirname + '/' + filename, (str(dirname + '/' + filename) + '_.' + file_format))
+        if data['type'] == MessageType.query_room_users_result:
+            if data['parameters'][1] != self.target['id']:
+                return
+            self.user_list = data['parameters'][0]
+            self.refresh_user_listbox()
+        if data['type'] == MessageType.room_user_on_off_line:
+            if data['parameters'][0] != self.target['id']:
+                return
+            for i in range(0, len(self.user_list)):
+                if self.user_list[i][0] == data['parameters'][1]:
+                    self.user_list[i][2] = data['parameters'][2]
+            self.refresh_user_listbox()
+
+    def refresh_user_listbox(self):
+        """更新好友列表"""
+        self.user_listbox.delete(0, END)
+        self.user_list.sort(key=lambda x: x[2])
+        for user in self.user_list:
+            self.user_listbox.insert(0, user[1] + ("(在线)" if user[2] else "(离线)"))
+            self.user_listbox.itemconfig(0, {'fg': ("blue" if user[2] else "#505050")})
+
+    def digest_message(self, data):
+        """处理消息并将其展示出来"""
+        time = datetime.datetime.fromtimestamp(
+            int(data['time']) / 1000
+        ).strftime('%Y-%m-%d %H:%M:%S')
+        self.append_to_chat_box(data['sender_name'] + "  " + time + '\n',
+                                ('me' if client.memory.current_user['id'] == data[
+                                    'sender_id'] else 'them'))
+        # type 0 - 文字消息 1 - 图片消息
+        if data['message']['type'] == 0:
+            self.tag_i += 1
+            self.chat_box.tag_config('new' + str(self.tag_i),
+                                     lmargin1=16,
+                                     lmargin2=16,
+                                     foreground=data['message']['fontcolor'],
+                                     font=(None, data['message']['fontsize']))
+            self.append_to_chat_box(data['message']['data'] + '\n',
+                                    'new' + str(self.tag_i))
+        if data['message']['type'] == 1:
+            client.memory.tk_img_ref.append(ImageTk.PhotoImage(data=data['message']['data']))
+            self.chat_box.image_create(END, image=client.memory.tk_img_ref[-1], padx=16, pady=5)
+            self.append_to_chat_box('\n', '')
+
+    def user_listbox_double_click(self, _):
+        """ 双击聊天框 """
+        if len(self.user_listbox.curselection()) == 0:
+            return None
+        index = self.user_listbox.curselection()[0]
+        selected_user_id = self.user_list[len(self.user_list) - 1 - index][0]
+        selected_user_username = self.user_list[len(self.user_list) - 1 - index][3]
+        if selected_user_id == client.memory.current_user['id']:
+            return
+        client.memory.contact_window[0].try_open_user_id(selected_user_id,
+                                                         selected_user_username)
+        return
+
     def append_to_chat_box(self, message, tags):
+        """ 附加聊天框 """
         self.chat_box.insert(tk.END, message, [tags, 'default'])
         self.chat_box.update()
         self.chat_box.see(tk.END)
 
-    """ 发送消息 """
     def send_message(self, _=None):
+        """ 发送消息 """
         message = self.input_textbox.get("1.0", END)
         if not message or message.replace(" ", "").replace("\r", "").replace("\n", "") == '':
             return
@@ -203,29 +203,29 @@ class ChatForm(tk.Frame):
         self.input_textbox.delete("1.0", END)
         return 'break'
 
-    """ 选择字体颜色 """
     def choose_color(self):
+        """ 选择字体颜色 """
         _, self.font_color = colorchooser.askcolor(initialcolor=self.font_color)
         self.apply_font_change(None)
 
-    """ 选择字体大小 """
     def choose_font_size(self):
+        """ 选择字体大小 """
         result = simpledialog.askinteger("设置", "请输入字体大小", initialvalue=self.font_size)
         if result is None:
             return
         self.font_size = result
         self.apply_font_change(None)
 
-    """" 更新字体 """
     def apply_font_change(self, _):
+        """" 更新字体 """
         try:
             self.input_textbox.tag_config('new', foreground=self.font_color, font=(None, self.font_size))
             self.input_textbox.tag_add('new', '1.0', END)
         except:
             pass
 
-    """" 发送图片 """
     def send_image(self):
+        """" 发送图片 """
         filename = filedialog.askopenfilename(filetypes=[("Image Files",
                                                           ["*.jpg", "*.jpeg", "*.png", "*.gif", "*.JPG", "*.JPEG",
                                                            "*.PNG", "*.GIF"]),
