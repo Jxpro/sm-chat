@@ -31,7 +31,7 @@ class VerticalScrolledFrame(Frame):
         self.interior_id = self.canvas.create_window(0, 0, window=interior, anchor=NW)
 
         # 跟踪画布和框架宽度的变化并同步，同时更新滚动条
-        def _configure_interior():
+        def _configure_interior(event):
             # 更新滚动条以匹配内部框架的大小
             size = (interior.winfo_reqwidth(), interior.winfo_reqheight())
             self.canvas.config(scrollregion="0 0 %s %s" % size)
@@ -41,7 +41,7 @@ class VerticalScrolledFrame(Frame):
 
         interior.bind('<Configure>', _configure_interior)
 
-        def _configure_canvas():
+        def _configure_canvas(event):
             if interior.winfo_reqwidth() != self.canvas.winfo_width():
                 # 更新内部框架的宽度以填充画布
                 self.canvas.itemconfigure(self.interior_id, width=self.canvas.winfo_width())
