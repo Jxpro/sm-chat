@@ -51,7 +51,6 @@ def socket_listener_thread(sc, tk_root):
 
                 if not conn_ok:
                     print('服务器已被关闭')
-                    # messagebox.showerror("出错了", "服务器已经被关闭")
                     tk_root.destroy()
                 else:
                     data_buffer = bytes()
