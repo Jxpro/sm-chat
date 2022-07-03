@@ -96,7 +96,8 @@ class ChatForm(tk.Frame):
         """定义监听事件"""
         self.digest_message(data)
 
-    def socket_listener(self, data):
+    @staticmethod
+    def socket_listener(data):
         """监听socket传来的数据"""
         init_time = int(time.time())
         dirname = "send_msg_log"

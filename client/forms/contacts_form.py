@@ -152,11 +152,10 @@ class ContactsForm(tk.Frame):
         if not result:
             return
         self.sc.send(MessageType.del_friend, result)
-        # print(MessageType.del_friend)
 
     def refresh_contacts(self):
         """更新列表界面"""
-        # print("self.contacts是一个列表，里面很多用户字典")
+        # self.contacts是一个列表，里面很多用户字典
         if not self.bundle_process_done:
             return
 

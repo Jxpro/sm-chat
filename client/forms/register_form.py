@@ -116,22 +116,15 @@ class RegisterForm(tk.Frame):
     def do_register(self):
         """" 注册操作 """
         username = self.var_user_name.get()
-        # print(type(username).__name__)
         password = self.var_user_pwd.get()
-        # print(type(password).__name__)
         password_confirmation = self.var_confirm_pwd.get()
         email = self.var_user_email.get()
-        # print(type(email).__name__)
         sex = self.var_user_sex.get()
-        # print(type(sex).__name__)
         age = self.var_user_age.get()
-        # print(type(age).__name__)
 
         ip = get_ip()
-        # print(type(ip).__name__)
         config = get_config()
         port = str((config['client']['client_port']))
-        # print(type(port).__name__)
 
         if not username:
             messagebox.showerror("Error", "用户名不能为空")
@@ -145,7 +138,7 @@ class RegisterForm(tk.Frame):
         if password != password_confirmation:
             messagebox.showerror("Error", "两次密码输入不一致")
             return
-        if not re.match(r'^[0-9a-zA-Z_]{0,19}@[0-9a-zA-Z]{1,13}\.[com,cn,net]{1,3}$', email):
+        if not re.match(r'^[0-9a-zA-Z_]{0,19}@[0-9a-zA-Z]{1,13}\.[comnet]{1,3}$', email):
             messagebox.showerror("Error", "邮箱格式错误")
             return
         self.sc.send(MessageType.register, [username, password, email, ip, port, sex, age])
@@ -159,7 +152,3 @@ class RegisterForm(tk.Frame):
             f.write(
                 (str(self.var_user_name.get()) + ' ' + str(self.var_user_email.get()) + " " + sp[2].decode()).encode())
             f.close()
-        # with open(certname, "rb") as f:
-        # a = f.read()
-        # print("content_after_write!!!:is:", a)
-        # f.close()
