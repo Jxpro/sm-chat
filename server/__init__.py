@@ -22,7 +22,6 @@ import server.memory
 from common.config import get_config
 from common.cryptography import crypt
 from common.message import MessageType
-from server.broadcast import broadcast
 from server.event_handler import handle_event
 from server.memory import *
 from server.util import database
