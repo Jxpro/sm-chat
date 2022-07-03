@@ -28,7 +28,6 @@ class MessageType(enum.IntEnum):
     add_friend = 4
     resolve_friend_request = 5
 
-    # {target_type:int(0=私聊 1=群聊),target_id:int,message:str}
     send_message = 6
 
     del_friend = 11
@@ -46,7 +45,7 @@ class MessageType(enum.IntEnum):
     # [online:bool,friend_user_id:int]
     friend_on_off_line = 107
     notify_chat_history = 108
-    # [target_type:int(0=私聊 1=群聊),target_id:int,message:str,sender_id:int,sender_name:str,time:int]
+    # [target_type:int(0=私聊),target_id:int,message:str,sender_id:int,sender_name:str,time:int]
     on_new_message = 109
     server_kick = 110
     login_bundle = 113

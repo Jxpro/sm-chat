@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 
 """
-    确定发送方和接收方信息后，确定target_type确定私聊群聊
+    确定发送方和接收方信息后，确定target_type确定私聊
     发送信息，私聊有信息存储历史消息。
     使用sent判断位判断信息是否对方接收成功。
 """
@@ -14,8 +14,7 @@ from server.memory import *
 from server.util import database
 
 
-# {target_type:int(0=私聊 1=群聊),target_id:int,message:str}
-# 群聊功能待开发
+# {target_type:int(0=私聊),target_id:int,message:str}
 
 def run(sc, parameters):
     # pprint(parameters)
