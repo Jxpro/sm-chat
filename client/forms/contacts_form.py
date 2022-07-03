@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-"""联系人列表"""
+
 import datetime
 import tkinter as tk
 from tkinter import *
@@ -18,6 +18,7 @@ from common.message import MessageType, _deserialize_any
 
 
 class ContactsForm(tk.Frame):
+    """ 联系人列表 """
     bundle_process_done = False
     pack_objs = []
 

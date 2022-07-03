@@ -5,8 +5,6 @@
 import os
 import tkinter as tk
 from tkinter import *
-from tkinter import colorchooser
-from tkinter import simpledialog
 from tkinter.scrolledtext import ScrolledText
 
 import filetype
@@ -16,10 +14,9 @@ import client.memory
 from client.util import socket_listener
 from client.util.socket_listener import *
 
-"""创建聊天框"""
-
 
 class ChatForm(tk.Frame):
+    """ 聊天界面 """
     font_color = "#000000"
     font_size = 16
     user_list = []

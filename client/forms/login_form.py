@@ -14,7 +14,7 @@ from common.message import MessageType
 
 
 class LoginForm(tk.Frame):
-    """登录界面"""
+    """ 登录界面 """
 
     def __init__(self, master=None):
         """创建主窗口用来容纳其他组件"""

@@ -2,16 +2,16 @@
 # -*- coding:utf-8 -*-
 
 """监听socket的线程"""
-import select
-from pprint import pprint
-from tkinter import messagebox
-from common.message import MessageType
-import datetime
-import time
-import client.memory
 import struct
 import sys
 import traceback
+from pprint import pprint
+from tkinter import messagebox
+
+import select
+
+import client.memory
+from common.message import MessageType
 
 callback_funcs = []
 message_listeners = []
@@ -92,6 +92,7 @@ def socket_listener_thread(sc, tk_root):
                     pprint(sys.exc_info())
                     traceback.print_exc(file=sys.stdout)
                     pass
+
 
 def digest_message(data, update_unread_count=True):
     # 放入 chat_history

@@ -14,7 +14,7 @@ from common.transmission.secure_channel import get_ip
 
 
 class RegisterForm(tk.Frame):
-    """ 注册操作 """
+    """ 注册界面 """
 
     def __init__(self, master=None):
         super().__init__(master)
@@ -103,7 +103,6 @@ class RegisterForm(tk.Frame):
                                                           'selectbackground': '#60d8ee',
                                                           'fieldbackground': '#60d8ee',
                                                           'background': '#60d8ee',
-
                                                           }
                                                      }
                                                 }
