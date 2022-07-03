@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-"""服务器处理好友请求操作码，会给被加方发送好友申请"""
+""" 服务器处理好友请求操作码，会给被加方发送好友申请 """
 
 from common.message import MessageType
 from server.memory import *

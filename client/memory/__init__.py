@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-"""一些用来存储的数据"""
+""" 一些用来共享的数据 """
 current_user = {"id": 0, "username": ""}
 sc = None
 tk_root = None

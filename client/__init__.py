@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-"""运行客户端"""
 import _thread
 import tkinter as tk
 from tkinter import messagebox

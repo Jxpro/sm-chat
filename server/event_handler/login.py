@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-"""服务器使用数据库验证客户端数据登录"""
+""" 服务器使用数据库验证客户端数据登录 """
 
 from common.message import MessageType
 from common.util import md5

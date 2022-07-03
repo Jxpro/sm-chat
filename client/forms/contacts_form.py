@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-
 import datetime
 import tkinter as tk
 from tkinter import *

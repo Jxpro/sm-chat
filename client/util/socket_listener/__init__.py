@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-"""监听socket的线程"""
+""" 监听socket的线程 """
 import struct
 import sys
 import traceback

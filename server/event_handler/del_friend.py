@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-"""操作数据库删除好友"""
+""" 操作数据库删除好友 """
 
 from common.message import MessageType
 from server.memory import *

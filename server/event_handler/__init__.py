@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-"""事件控制初始化函数
+"""
+    事件控制初始化函数
     import本文件下其他所有py文件，
-
     定义事件处理函数，执行传来的参数名字的py文件,实现MessageType和操作名的映射
-
     Exp:event_handler_map[event_type].run(sc, parameters)，
-event_type = 1 = login,则会执行login.run(sc,parameters).
+    event_type = 1 = login,则会执行login.run(sc,parameters).
 """
 
 import server.event_handler.add_friend
