@@ -43,9 +43,6 @@ class SecureChannel:
         encrypted_message = encryption_suite.encrypt(data_to_encrypt)
         length_of_encrypted_message = len(encrypted_message)
 
-        # pprint([length_of_encrypted_message,
-        #         struct.pack('L', length_of_encrypted_message), bytes([padding_n]), iv1, encrypted_message])
-        # pprint(['sending', self.socket, message_type, parameters])
         mac = hashlib.md5(encrypted_message).hexdigest().encode()
 
         self.socket.send(
@@ -59,14 +56,9 @@ class SecureChannel:
         """
         br = ByteArrayReader(data_array)
 
-        # pprint(['recv', 'first_4_bytes', first_4_bytes, length_of_encrypted_message])
         padding_n = br.read(1)[0]
-        # pprint(['recv', 'padding_n', padding_n])
 
         iv = br.read(16)
-        # pprint(['recv', 'iv', iv])
-        # incomplete
-        bytes_received = 0
 
         # 对比接收到的mac值和用收到的加密数据算出的mac值是否相等
         recv_mac = br.read(32)
@@ -81,7 +73,6 @@ class SecureChannel:
 
         if padding_n != 0:
             decrypted_data = decrypted_data[0:-padding_n]
-        # pprint(['recv', 'decrypted_data', decrypted_data])
 
         return deserialize_message(decrypted_data)
 

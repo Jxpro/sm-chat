@@ -17,7 +17,6 @@ from server.util import database
 # {target_type:int(0=私聊),target_id:int,message:str}
 
 def run(sc, parameters):
-    # pprint(parameters)
     user_id = sc_to_user_id[sc]
     sender = database.get_user(user_id)
 
@@ -36,7 +35,8 @@ def run(sc, parameters):
         # 给发送方发回执
         message['target_id'] = parameters['target_id']
         user_id_to_sc[user_id].send(MessageType.on_new_message, message)
-        database.add_to_chat_history(user_id, message['target_id'], message['target_type'],
+        database.add_to_chat_history(user_id, message['target_id'],
+                                     message['target_type'],
                                      _serialize_dict(message),
                                      True)
 
@@ -47,6 +47,8 @@ def run(sc, parameters):
             sent = True
             user_id_to_sc[parameters['target_id']].send(MessageType.on_new_message, message)
 
-        database.add_to_chat_history(parameters['target_id'], message['target_id'], message['target_type'],
+        database.add_to_chat_history(parameters['target_id'],
+                                     message['target_id'],
+                                     message['target_type'],
                                      _serialize_dict(message),
                                      sent)

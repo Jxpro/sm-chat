@@ -10,12 +10,9 @@ from server.util import database
 
 def run(sc, parameters):
     user_id = sc_to_user_id[sc]
-    # parameters = username
     c = database.get_cursor()
     username = parameters.strip().lower()
-    # print(user_id)
     r = c.execute('SELECT id from users where username=?', [username]).fetchall()
-    # print(r[0][0])
     # 异常条件判断
     if len(r) == 0:
         sc.send(MessageType.del_friend_result, [False, '用户名不存在'])

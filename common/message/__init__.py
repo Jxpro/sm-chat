@@ -27,21 +27,18 @@ class MessageType(enum.IntEnum):
     # username:str
     add_friend = 4
     resolve_friend_request = 5
-
+    # [target_type:int(0=私聊),target_id:int,message:str,sender_id:int,sender_name:str,time:int]
     send_message = 6
-
     del_friend = 11
 
     # === Server Action 101-200
     login_successful = 100
     register_successful = 101
     incoming_friend_request = 102
-
     contact_info = 103
     chat_history = 104
     # [successful:bool,err_msg:str]
     add_friend_result = 106
-
     # [online:bool,friend_user_id:int]
     friend_on_off_line = 107
     notify_chat_history = 108
@@ -51,6 +48,7 @@ class MessageType(enum.IntEnum):
     login_bundle = 113
     del_friend_result = 114
     del_info = 115
+
     # === Failure 201-300
     login_failed = 201
     username_taken = 202
@@ -188,7 +186,6 @@ def _deserialize_list(bytes):
 
 def _deserialize_dict(bytes):
     # |--Length of Key(1Byte)--|--Key--|--Body (self-evident length)--|
-    # |--Length of Key(1Byte)--|--Key--|--Body (self-evident length)--|
     # ...
     byte_reader = ByteArrayReader(bytes)
     ret = {}
@@ -228,10 +225,8 @@ def deserialize_message(data):
     return ret
 
 
-"""读取一段bytearray，并移动数组指针"""
-
-
 class ByteArrayReader:
+    """读取一段bytearray，并移动数组指针"""
 
     def __init__(self, byte_array):
         self.byte_array = byte_array

@@ -39,7 +39,6 @@ def get_pending_friend_request(user_id):
     rows = c.execute('SELECT from_user_id FROM friends WHERE to_user_id=? AND NOT accepted', [user_id]).fetchall()
     for row in rows:
         uid = row[0]
-        # pprint([uid, type(uid)])
         users.append(get_user(uid))
     return users
 
@@ -51,7 +50,6 @@ def get_friends(user_id):
     rows = c.execute('SELECT to_user_id FROM friends WHERE from_user_id=? AND accepted', [user_id]).fetchall()
     for row in rows:
         uid = row[0]
-        # pprint([uid, type(uid)])
         users.append(get_user(uid))
     return users
 
@@ -63,21 +61,16 @@ def is_friend_with(from_user_id, to_user_id):
     return len(r) > 0
 
 
-"""将发送方向接收方发送的信息存入数据库,用于历史消息重发"""
-
-
 def add_to_chat_history(user_id, target_id, target_type, data, sent):
+    """将发送方向接收方发送的信息存入数据库,用于历史消息重发"""
     c = get_cursor()
     c.execute('INSERT INTO chat_history (user_id,target_id,target_type,data,sent) VALUES (?,?,?,?,?)',
               [user_id, target_id, target_type, data, sent])
     return c.lastrowid
 
 
-# [[data:bytes,sent:int]]
-"""获取某用户的历史消息"""
-
-
 def get_chat_history(user_id):
+    """获取某用户的历史消息"""
     c = get_cursor()
     ret = list(map(lambda x: [bytearray(x[0]), x[1]],
                    c.execute('SELECT data,sent FROM chat_history WHERE user_id=?',

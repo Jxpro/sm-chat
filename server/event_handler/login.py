@@ -47,7 +47,6 @@ def run(sc, parameters):
     login_bundle['friends'] = list(map(lambda x: add_target_type(x, 0), frs))
 
     for fr in frs:
-        # sc.send(MessageType.contact_info, add_target_type(fr, 0))
         # 通知他的好友他上线了
         if fr['id'] in user_id_to_sc:
             user_id_to_sc[fr['id']].send(MessageType.friend_on_off_line, [True, user_id])
