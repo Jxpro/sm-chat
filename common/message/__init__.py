@@ -31,14 +31,6 @@ class MessageType(enum.IntEnum):
     # {target_type:int(0=私聊 1=群聊),target_id:int,message:str}
     send_message = 6
 
-    # id:int
-    join_room = 7
-    # name:str
-    create_room = 8
-    # id:int
-    query_room_users = 9
-
-    bad = 10
     del_friend = 11
 
     # === Server Action 101-200
@@ -48,7 +40,6 @@ class MessageType(enum.IntEnum):
 
     contact_info = 103
     chat_history = 104
-    server_echo = 105
     # [successful:bool,err_msg:str]
     add_friend_result = 106
 
@@ -58,9 +49,6 @@ class MessageType(enum.IntEnum):
     # [target_type:int(0=私聊 1=群聊),target_id:int,message:str,sender_id:int,sender_name:str,time:int]
     on_new_message = 109
     server_kick = 110
-    query_room_users_result = 111
-    # [room_id, user_id, online]
-    room_user_on_off_line = 112
     login_bundle = 113
     del_friend_result = 114
     del_info = 115
