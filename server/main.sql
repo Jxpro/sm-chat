@@ -26,27 +26,6 @@ PRIMARY KEY ("from_user_id" ASC, "to_user_id")
 );
 
 -- ----------------------------
--- Table structure for rooms
--- ----------------------------
-DROP TABLE IF EXISTS "main"."rooms";
-CREATE TABLE "rooms" (
-"id"  INTEGER NOT NULL,
-"room_name"  TEXT,
-PRIMARY KEY ("id")
-);
-
--- ----------------------------
--- Table structure for room_user
--- ----------------------------
-DROP TABLE IF EXISTS "main"."room_user";
-CREATE TABLE "room_user" (
-"id"  INTEGER NOT NULL,
-"room_id"  INTEGER,
-"user_id"  INTEGER,
-PRIMARY KEY ("id")
-);
-
--- ----------------------------
 -- Table structure for users
 -- ----------------------------
 DROP TABLE IF EXISTS "main"."users";
