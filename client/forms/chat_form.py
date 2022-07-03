@@ -30,7 +30,6 @@ class ChatForm(tk.Frame):
         super().__init__(master)
         self.master = master
         self.target = target
-        self.user_listbox = tk.Listbox(self, bg='#63d5eb', width=0, bd=0)
         client.util.socket_listener.add_listener(self.socket_listener)
         client.memory.unread_message_count[self.target['type']][self.target['id']] = 0
         client.memory.contact_window[0].refresh_contacts()
@@ -40,16 +39,8 @@ class ChatForm(tk.Frame):
         # 私人聊天
         if self.target['type'] == 0:
             self.master.title(self.target['username'])
-        # 群组聊天
-        if self.target['type'] == 1:
-            self.master.title("[群:" + str(self.target['id']) + "] " + self.target['room_name'])
-            self.sc.send(MessageType.query_room_users, self.target['id'])
 
         self.right_frame = tk.Frame(self)
-
-        self.user_listbox.bind('<Double-Button-1>', self.user_listbox_double_click)
-        if self.target['type'] == 1:
-            self.user_listbox.pack(side=LEFT, expand=False, fill=BOTH)
 
         self.right_frame.pack(side=LEFT, expand=True, fill=BOTH)
         self.input_frame = tk.Frame(self.right_frame, bg='#63d5eb')
@@ -123,26 +114,6 @@ class ChatForm(tk.Frame):
                     file_format = "txt"
                 f.close()
             os.rename(dirname + '/' + filename, (str(dirname + '/' + filename) + '_.' + file_format))
-        if data['type'] == MessageType.query_room_users_result:
-            if data['parameters'][1] != self.target['id']:
-                return
-            self.user_list = data['parameters'][0]
-            self.refresh_user_listbox()
-        if data['type'] == MessageType.room_user_on_off_line:
-            if data['parameters'][0] != self.target['id']:
-                return
-            for i in range(0, len(self.user_list)):
-                if self.user_list[i][0] == data['parameters'][1]:
-                    self.user_list[i][2] = data['parameters'][2]
-            self.refresh_user_listbox()
-
-    def refresh_user_listbox(self):
-        """更新好友列表"""
-        self.user_listbox.delete(0, END)
-        self.user_list.sort(key=lambda x: x[2])
-        for user in self.user_list:
-            self.user_listbox.insert(0, user[1] + ("(在线)" if user[2] else "(离线)"))
-            self.user_listbox.itemconfig(0, {'fg': ("blue" if user[2] else "#505050")})
 
     def digest_message(self, data):
         """处理消息并将其展示出来"""
@@ -166,19 +137,6 @@ class ChatForm(tk.Frame):
             client.memory.tk_img_ref.append(ImageTk.PhotoImage(data=data['message']['data']))
             self.chat_box.image_create(END, image=client.memory.tk_img_ref[-1], padx=16, pady=5)
             self.append_to_chat_box('\n', '')
-
-    def user_listbox_double_click(self, _):
-        """ 双击聊天框 """
-        if len(self.user_listbox.curselection()) == 0:
-            return None
-        index = self.user_listbox.curselection()[0]
-        selected_user_id = self.user_list[len(self.user_list) - 1 - index][0]
-        selected_user_username = self.user_list[len(self.user_list) - 1 - index][3]
-        if selected_user_id == client.memory.current_user['id']:
-            return
-        client.memory.contact_window[0].try_open_user_id(selected_user_id,
-                                                         selected_user_username)
-        return
 
     def append_to_chat_box(self, message, tags):
         """ 附加聊天框 """

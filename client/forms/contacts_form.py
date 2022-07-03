@@ -20,7 +20,7 @@ from common.message import MessageType, _deserialize_any
 class ContactsForm(tk.Frame):
     bundle_process_done = False
     pack_objs = []
-    
+
     def __init__(self, master=None):
         client.memory.contact_window.append(self)
         super().__init__(master)
@@ -40,18 +40,10 @@ class ContactsForm(tk.Frame):
         self.add_friend = Button(self.button_frame_left, text="添加好友", font=("楷体", 16), fg="black", bg="#35d1e9",
                                  activebackground="#6cdcf0", relief=GROOVE, command=self.on_add_friend)
         self.add_friend.pack(side=TOP, expand=True, fill=BOTH)
-        # 添加群聊
-        self.add_room = Button(self.button_frame_left, text="添加群聊", font=("楷体", 16), fg="black", bg="#35d1e9",
-                               activebackground="#6cdcf0", relief=GROOVE, command=self.on_add_room)
-        self.add_room.pack(side=TOP, expand=True, fill=BOTH)
         # 删除好友
         self.del_friend = Button(self.button_frame_right, text="删除好友", font=("楷体", 16), fg="black", bg="#35d1e9",
                                  activebackground="#6cdcf0", relief=GROOVE, command=self.on_del_friend)
         self.del_friend.pack(side=TOP, expand=True, fill=BOTH)
-        # 创建群聊
-        self.create_room = Button(self.button_frame_right, text="创建群聊", font=("楷体", 16), fg="black", bg="#35d1e9",
-                                  activebackground="#6cdcf0", relief=GROOVE, command=self.on_create_room)
-        self.create_room.pack(side=TOP, expand=True, fill=BOTH)
         # 页面定位
         self.pack(side=TOP, fill=BOTH, expand=True)
         self.contacts = []
@@ -70,12 +62,9 @@ class ContactsForm(tk.Frame):
         if data['type'] == MessageType.login_bundle:
             bundle = data['parameters']
             friends = bundle['friends']
-            rooms = bundle['rooms']
             messages = bundle['messages']
             for friend in friends:
                 self.handle_new_contact(friend)
-            for room in rooms:
-                self.handle_new_contact(room)
             for item in messages:
                 sent = item[1]
                 message = _deserialize_any(item[0])
@@ -85,7 +74,7 @@ class ContactsForm(tk.Frame):
             self.refresh_contacts()
 
         if data['type'] == MessageType.incoming_friend_request:
-            result = messagebox.askyesnocancel("好友请求", data['parameters']['username'] + "请求加您为好友，是否同意？(按Cancel为下次再询问)")
+            result = messagebox.askyesnocancel("好友请求", data['parameters']['username'] + "请求加您为好友，是否同意？(点击取消表示下次登录再询问)")
             if result is None:
                 return
             self.sc.send(MessageType.resolve_friend_request, [data['parameters']['id'], result])
@@ -166,39 +155,11 @@ class ContactsForm(tk.Frame):
         self.sc.send(MessageType.del_friend, result)
         # print(MessageType.del_friend)
 
-    def on_add_room(self):
-        """ 添加群 """
-        print('--- on add room ---')
-        result = simpledialog.askinteger('添加群', '请输入群号')
-        if not result:
-            return
-        self.sc.send(MessageType.join_room, result)
-
-    def on_create_room(self):
-        """" 创建群 """
-        print("--- on create room ---")
-        result = simpledialog.askstring('创建群', '请输入群名称')
-        if not result:
-            return
-        self.sc.send(MessageType.create_room, result)
-
     class Event:
         widget = None
 
         def __init__(self, widget):
             self.widget = widget
-
-    def try_open_user_id(self, id, name, username):
-        """ 查看用户ID """
-        print('--- try open user id ---')
-        for i in range(0, len(self.pack_objs)):
-            frame = self.pack_objs[i]
-            if frame.item['id'] == id and frame.item['type'] == 0:
-                self.on_frame_click(self.Event(frame))
-                return
-        result = messagebox.askyesno("是否加好友", name + "不在您的好友列表中，是否加好友？")
-        if result:
-            self.sc.send(MessageType.add_friend, username)
 
     def refresh_contacts(self):
         """更新列表界面"""
@@ -225,11 +186,6 @@ class ContactsForm(tk.Frame):
                 contact.title.config(text=item['username'] + (' (在线)' if item['online'] else ' (离线)'))
                 contact.title.config(fg='blue' if item['online'] else '#505050', )
                 contact.friend_ip.config(text=item['ip'] + ':' + item['port'])
-            if item['type'] == 1:
-                # 群
-                contact.title.config(text='[群:' + str(item['id']) + '] ' + item['room_name'])
-                contact.title.config(fg='green')
-                contact.friend_ip.config(text='')
 
             self.pack_objs.append(contact)
             time_message = datetime.datetime.fromtimestamp(

@@ -15,6 +15,7 @@ from server.util import database
 
 
 # {target_type:int(0=私聊 1=群聊),target_id:int,message:str}
+# 群聊功能待开发
 
 def run(sc, parameters):
     # pprint(parameters)
@@ -50,23 +51,3 @@ def run(sc, parameters):
         database.add_to_chat_history(parameters['target_id'], message['target_id'], message['target_type'],
                                      _serialize_dict(message),
                                      sent)
-
-    if parameters['target_type'] == 1:
-        # 群聊
-        message['target_id'] = parameters['target_id']
-
-        if not database.in_room(user_id, parameters['target_id']):
-            sc.send(MessageType.general_failure, '还没有加入该群')
-            return
-
-        users_id = database.get_room_members_id(parameters['target_id'])
-
-        for user_id in users_id:
-            sent = False
-            if user_id in user_id_to_sc:
-                user_id_to_sc[user_id].send(MessageType.on_new_message, message)
-                sent = True
-
-            database.add_to_chat_history(user_id, message['target_id'], message['target_type'],
-                                         _serialize_dict(message),
-                                         sent)

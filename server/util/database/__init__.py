@@ -60,67 +60,11 @@ def get_friends(user_id):
     return users
 
 
-def get_user_rooms(user_id):
-    c = get_cursor()
-    rooms = []
-    rows = c.execute('SELECT room_id FROM room_user WHERE user_id=?', [user_id]).fetchall()
-    for row in rows:
-        room_id = row[0]
-        rooms.append(get_room(room_id))
-    return rooms
-
-
-def get_user_rooms_id(user_id):
-    c = get_cursor()
-    rooms = []
-    rows = c.execute('SELECT room_id FROM room_user WHERE user_id=?', [user_id]).fetchall()
-    for row in rows:
-        room_id = row[0]
-        rooms.append(room_id)
-    return rooms
-
-
 def is_friend_with(from_user_id, to_user_id):
     c = get_cursor()
     r = c.execute('SELECT 1 FROM friends WHERE from_user_id=? AND to_user_id=? AND accepted=1',
                   [from_user_id, to_user_id]).fetchall()
     return len(r) > 0
-
-
-def get_room(room_id):
-    c = get_cursor()
-    fields = ['id', 'room_name']
-    row = c.execute('SELECT ' + ','.join(fields) + ' FROM rooms WHERE id=?', [room_id]).fetchall()
-    if len(row) == 0:
-        return None
-    else:
-        room = dict(zip(fields, row[0]))
-        return room
-
-
-def in_room(user_id, room_id):
-    c = get_cursor()
-    r = c.execute('SELECT 1 FROM room_user WHERE user_id=? AND room_id=? ',
-                  [user_id, room_id]).fetchall()
-    return len(r) > 0
-
-
-def add_to_room(user_id, room_id):
-    c = get_cursor()
-    r = c.execute('INSERT INTO room_user (user_id,room_id) VALUES (?,?) ',
-                  [user_id, room_id])
-
-
-def get_room_members_id(room_id):
-    return list(map(lambda x: x[0], get_cursor().execute('SELECT user_id FROM room_user WHERE room_id=?',
-                                                         [room_id]).fetchall()))
-
-
-def get_room_members(room_id):
-    # [id,  online, username]
-    return list(map(lambda x: [x[0], x[1], x[0] in user_id_to_sc, x[2]], get_cursor().execute(
-        'SELECT user_id,username FROM room_user LEFT JOIN users ON users.id=user_id WHERE room_id=?',
-        [room_id]).fetchall()))
 
 
 """将发送方向接收方发送的信息存入数据库,用于历史消息重发"""

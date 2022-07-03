@@ -11,11 +11,8 @@ event_type = 1 = login,则会执行login.run(sc,parameters).
 """
 
 import server.event_handler.add_friend
-import server.event_handler.create_room
 import server.event_handler.del_friend
-import server.event_handler.join_room
 import server.event_handler.login
-import server.event_handler.query_room_users
 import server.event_handler.register
 import server.event_handler.resolve_friend_request
 import server.event_handler.send_message
@@ -28,9 +25,6 @@ event_handler_map = {
     MessageType.resolve_friend_request: resolve_friend_request,
     MessageType.add_friend: add_friend,
     MessageType.del_friend: del_friend,
-    MessageType.join_room: join_room,
-    MessageType.create_room: create_room,
-    MessageType.query_room_users: query_room_users,
 }
 
 
