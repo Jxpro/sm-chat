@@ -110,7 +110,7 @@ def establish_secure_channel_to_server():
         public = f.read()
         f.close()
         with open(certname, 'wb') as f:
-            f.write("aaa bbb ".encode() + public)
+            f.write("client 1529177144@qq.com ".encode() + public)
             f.close()
 
     # 首次连接，给服务器发送证书

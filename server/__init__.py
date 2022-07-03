@@ -35,7 +35,7 @@ def gen_cert():
         public = f.read()
         f.close()
     with open("admin_cert.pem", "wb") as f:
-        f.write("server ahahahaha@qq.com ".encode() + public)
+        f.write("server 1529177144@qq.com ".encode() + public)
         f.close()
 
 
