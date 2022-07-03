@@ -15,6 +15,7 @@ from common.message import MessageType
 
 callback_funcs = []
 message_listeners = []
+func_to_tuple = {}
 
 
 def gen_last_message(obj):
@@ -123,9 +124,6 @@ def add_listener(func):
 
 def remove_listener(func):
     callback_funcs.remove(func)
-
-
-func_to_tuple = {}
 
 
 def add_message_listener(target_type, target_id, func):
