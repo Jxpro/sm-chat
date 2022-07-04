@@ -2,14 +2,11 @@
 # -*- coding:utf-8 -*-
 
 import datetime
-import os
-import time
 import tkinter as tk
 from tkinter import *
 from tkinter import colorchooser, simpledialog, filedialog
 from tkinter.scrolledtext import ScrolledText
 
-import filetype
 from PIL import ImageTk
 
 import client.memory
@@ -98,22 +95,7 @@ class ChatForm(tk.Frame):
     @staticmethod
     def socket_listener(data):
         """监听socket传来的数据"""
-        init_time = int(time.time())
-        dirname = "send_msg_log"
-        filename = str(init_time)
-        dir_flag = os.path.exists(dirname)
-        if not dir_flag:
-            os.mkdir(dirname)
-        if data['parameters']['message']['type'] == 1:
-            with open(dirname + '/' + filename, 'wb') as f:
-                contents = data['parameters']['message']['data']
-                f.write(contents)
-            with open(dirname + '/' + filename, 'rb') as f:
-                file_format = filetype.guess(dirname + '/' + filename)
-                file_format = file_format.extension
-                if file_format is None:
-                    file_format = "txt"
-            os.rename(dirname + '/' + filename, (str(dirname + '/' + filename) + '_.' + file_format))
+        pass
 
     def digest_message(self, data):
         """处理消息并将其展示出来"""
