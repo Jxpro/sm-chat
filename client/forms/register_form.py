@@ -124,7 +124,6 @@ class RegisterForm(tk.Frame):
 
         ip = get_ip()
         config = get_config()
-        port = str((config['client']['client_port']))
 
         if not username:
             messagebox.showerror("Error", "用户名不能为空")
@@ -141,14 +140,11 @@ class RegisterForm(tk.Frame):
         if not re.match(r'^[0-9a-zA-Z_]{0,19}@[0-9a-zA-Z]{1,13}\.[comnet]{1,3}$', email):
             messagebox.showerror("Error", "邮箱格式错误")
             return
-        self.sc.send(MessageType.register, [username, password, email, ip, port, sex, age])
+        self.sc.send(MessageType.register, [username, password, email, ip, sex, age])
 
         certname = ip + "_cert.pem"
-        with open(certname, 'rb') as f:
+        with open(certname, 'r') as f:
             context = f.read()
             sp = context.split()
-            f.close()
-        with open(certname, 'wb') as f:
-            f.write(
-                (str(self.var_user_name.get()) + ' ' + str(self.var_user_email.get()) + " " + sp[2].decode()).encode())
-            f.close()
+        with open(certname, 'w') as f:
+            f.write("%s %s %s" % (self.var_user_name.get(), self.var_user_email.get(), sp[2]))

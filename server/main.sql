@@ -34,10 +34,8 @@ CREATE TABLE "users" (
 "username"  TEXT,
 "password"  TEXT,
 "email"  TEXT,
-"ip"  TEXT,
-"port" TEXT,
 "sex"  TEXT,
 "age"  TEXT,
-"pk"  TEXT,
+"salt"  TEXT,
 PRIMARY KEY ("id" ASC)
 );

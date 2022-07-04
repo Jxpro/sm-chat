@@ -39,11 +39,6 @@ class ContactItem(Frame):
                                        bg="#9aa7b1")
         self.last_message_time.pack(side=RIGHT, anchor=E)
 
-        # 好友的ip
-        self.friend_ip_frame.pack(side=TOP, expand=FALSE, fill=BOTH)
-        self.friend_ip = Label(self.friend_ip_frame, text="ip", font=('仿宋', 10), fg='#575757', bg="#9aa7b1")
-        self.friend_ip.pack(side=RIGHT, anchor=E)
-
         # 处理未读消息
         self.unread_message_count = Label(self.message_frame, text="0", font=('Arial', 10), fg='white', bg='red')
         self.unread_message_count.pack(side=RIGHT, anchor=E, fill=None, expand=False, ipadx=2)

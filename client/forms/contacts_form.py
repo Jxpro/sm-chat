@@ -174,8 +174,7 @@ class ContactsForm(tk.Frame):
             if item['type'] == 0:
                 # 联系人
                 contact.title.config(text=item['username'] + (' (在线)' if item['online'] else ' (离线)'))
-                contact.title.config(fg='blue' if item['online'] else '#505050', )
-                contact.friend_ip.config(text=item['ip'] + ':' + item['port'])
+                contact.title.config(fg='blue' if item['online'] else '#505050')
 
             self.pack_objs.append(contact)
             time_message = datetime.datetime.fromtimestamp(
