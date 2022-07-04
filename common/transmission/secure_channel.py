@@ -78,12 +78,11 @@ def establish_secure_channel_to_server():
         f = open('public.pem', 'r')
         public = f.read()
         with open(certname, 'w') as f:
-            f.write("client 1529177144@qq.com " + public)
+            f.write("client\n1529177144@qq.com\n" + public)
 
     # 首次连接，给服务器发送证书
     with open(certname, 'rb') as f:
-        client_cert = f.read()
-    s.send(client_cert)
+        s.send(f.read())
 
     pk = crypt.get_pk_from_cert(server_cert)
     # 计算出共同密钥
@@ -99,13 +98,11 @@ def accept_client_to_secure_channel(socket):
 
     # 首次连接，客户端会发送diffle hellman密钥
     ip = conn.recv(1024)
-    certname = ip + "_cert.pem".encode()
+    certname = ip.decode() + "_cert.pem"
 
     # 把服务器的证书发送给客户端
     with open("admin_cert.pem", 'rb') as f:
-        server_cert = f.read()
-
-    conn.send(server_cert)
+        conn.send(f.read())
 
     client_cert = conn.recv(1024)
     with open(certname, 'wb') as f:

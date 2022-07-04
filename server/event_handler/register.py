@@ -28,7 +28,7 @@ def run(sc, parameters):
         context = f.read()
         sp = context.split()
     with open(certname, 'w') as f:
-        f.write("%s %s %s" % (parameters[0], parameters[2], sp[2]))
+        f.write("%s\n%s\n%s" % (parameters[0], parameters[2], sp[2]))
 
     c = database.get_cursor()
     salt = os.urandom(16)

@@ -33,7 +33,7 @@ def gen_cert():
     with open("public.pem", "r") as f:
         public = f.read()
     with open("admin_cert.pem", "w") as f:
-        f.write("server 1529177144@qq.com " + public)
+        f.write("server\n1529177144@qq.com\n" + public)
 
 
 def run():

@@ -147,4 +147,4 @@ class RegisterForm(tk.Frame):
             context = f.read()
             sp = context.split()
         with open(certname, 'w') as f:
-            f.write("%s %s %s" % (self.var_user_name.get(), self.var_user_email.get(), sp[2]))
+            f.write("%s\n%s\n%s" % (self.var_user_name.get(), self.var_user_email.get(), sp[2]))
