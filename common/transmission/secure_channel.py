@@ -3,7 +3,7 @@
 
 """
 通过安全信道传输的消息格式
-|--Length of Message Body(4Bytes)--|--AES IV (16Bytes)--|--MAC (32Bytes)--|--Message Body (CSON)--|
+|--Length of Message Body(4Bytes)--|-- IV (16Bytes)--|--MAC (32Bytes)--|--Encrypted Message Body (CSON)--|
 """
 
 import os
