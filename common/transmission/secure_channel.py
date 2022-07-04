@@ -85,9 +85,9 @@ def establish_secure_channel_to_server():
         client_cert = f.read()
     s.send(client_cert)
 
-    their_secret = crypt.get_pk_from_cert(server_cert)
+    pk = crypt.get_pk_from_cert(server_cert)
     # 计算出共同密钥
-    shared_secret = crypt.get_shared_secret(their_secret, "client")
+    shared_secret = crypt.get_shared_secret(pk, "client")
 
     sc = SecureChannel(s, shared_secret)
 
@@ -112,8 +112,8 @@ def accept_client_to_secure_channel(socket):
         f.write(client_cert)
 
     # 计算出共享密钥
-    their_secret = crypt.get_pk_from_cert(client_cert)
-    shared_secert = crypt.get_shared_secret(their_secret, "admin")
+    pk = crypt.get_pk_from_cert(client_cert)
+    shared_secert = crypt.get_shared_secret(pk, "admin")
     sc = SecureChannel(conn, shared_secert)
 
     return sc
