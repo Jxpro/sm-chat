@@ -108,13 +108,11 @@ class ChatForm(tk.Frame):
             with open(dirname + '/' + filename, 'wb') as f:
                 contents = data['parameters']['message']['data']
                 f.write(contents)
-                f.close()
             with open(dirname + '/' + filename, 'rb') as f:
                 file_format = filetype.guess(dirname + '/' + filename)
                 file_format = file_format.extension
                 if file_format is None:
                     file_format = "txt"
-                f.close()
             os.rename(dirname + '/' + filename, (str(dirname + '/' + filename) + '_.' + file_format))
 
     def digest_message(self, data):

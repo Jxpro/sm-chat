@@ -28,8 +28,10 @@ class SecureChannel:
 
     def send(self, message_type, parameters=None):
         iv = os.urandom(16)
+
         data_to_encrypt = serialize_message(message_type, parameters)
         encrypted_message = SM4Suite(self.shared_secret, SM4_CBC_MODE, iv=iv).encrypt(data_to_encrypt)
+
         mac = sm3.sm3_hash(encrypted_message)
         length_of_encrypted_message = len(encrypted_message)
         self.socket.send(struct.pack('!L', length_of_encrypted_message) + iv + mac + encrypted_message)
@@ -43,7 +45,6 @@ class SecureChannel:
         br = ByteArrayReader(data_array)
         iv = br.read(16)
 
-        # 对比接收到的mac值和用收到的加密数据算出的mac值是否相等
         recv_mac = br.read(32)
         data = br.read_to_end()
         mac = sm3.sm3_hash(data)
@@ -74,17 +75,14 @@ def establish_secure_channel_to_server():
     if not os.path.exists(certname):
         # 生成私钥公钥和证书
         crypt.gen_secret("client")
-        f = open('public.pem', 'rb')
+        f = open('public.pem', 'r')
         public = f.read()
-        f.close()
-        with open(certname, 'wb') as f:
-            f.write("client 1529177144@qq.com ".encode() + public)
-            f.close()
+        with open(certname, 'w') as f:
+            f.write("client 1529177144@qq.com " + public)
 
     # 首次连接，给服务器发送证书
     with open(certname, 'rb') as f:
         client_cert = f.read()
-        f.close()
     s.send(client_cert)
 
     their_secret = crypt.get_pk_from_cert(server_cert)
@@ -106,14 +104,12 @@ def accept_client_to_secure_channel(socket):
     # 把服务器的证书发送给客户端
     with open("admin_cert.pem", 'rb') as f:
         server_cert = f.read()
-        f.close()
 
     conn.send(server_cert)
 
     client_cert = conn.recv(1024)
     with open(certname, 'wb') as f:
         f.write(client_cert)
-        f.close()
 
     # 计算出共享密钥
     their_secret = crypt.get_pk_from_cert(client_cert)

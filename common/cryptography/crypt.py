@@ -5,8 +5,6 @@ from common.config import get_config
 from common.cryptography import sm2, sm3
 
 config = get_config()
-base = config['crypto']['base']
-modulus = config['crypto']['modulus']
 suite = sm2.SM2Suite(0, 0)
 
 
@@ -16,10 +14,8 @@ def gen_secret(prefix=""):
 
     with open(prefix + "_private.pem", "w") as f:
         f.write(sk)
-        f.close()
     with open("public.pem", "w") as f:
         f.write(pk)
-        f.close()
 
 
 def get_shared_secret(pk, prefix=""):
