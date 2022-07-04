@@ -2,7 +2,6 @@
 # -*- coding:utf-8 -*-
 
 from binascii import unhexlify
-from hashlib import md5 as _md5
 
 
 def long_to_bytes(val, endianness='big'):
@@ -44,10 +43,3 @@ def long_to_bytes(val, endianness='big'):
         s = s[::-1]
 
     return s
-
-
-def md5(text):
-    """计算md5值"""
-    m = _md5()
-    m.update(text.encode('utf-8'))
-    return m.hexdigest()

@@ -5,10 +5,8 @@
     服务器控制数据库注册，删除了空白字符并将英文字符小写。
     并在本地将之前的用户证书更新，写入用户username和邮箱
 """
-
+from common.cryptography import sm3
 from common.message import MessageType
-from common.util import md5
-# TODO: MD5改为SM3
 from server.util import database
 
 
@@ -34,6 +32,6 @@ def run(sc, parameters):
 
     c = database.get_cursor()
     c.execute('INSERT into users (username,password,email,ip,port,sex,age) values (?,?,?,?,?,?,?)',
-              [parameters[0], md5(parameters[1]), parameters[2], parameters[3], parameters[4], parameters[5],
+              [parameters[0], sm3.sm3_hash(parameters[1].encode()), parameters[2], parameters[3], parameters[4], parameters[5],
                parameters[6]])
     sc.send(MessageType.register_successful, c.lastrowid)

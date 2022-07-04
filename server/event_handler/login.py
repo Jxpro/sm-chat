@@ -2,9 +2,8 @@
 # -*- coding:utf-8 -*-
 
 """ 服务器使用数据库验证客户端数据登录 """
-
+from common.cryptography import sm3
 from common.message import MessageType
-from common.util import md5
 from server.memory import *
 from server.util import add_target_type
 from server.util import database
@@ -13,7 +12,8 @@ from server.util import database
 def run(sc, parameters):
     parameters[0] = parameters[0].strip().lower()
     c = database.get_cursor()
-    r = c.execute('SELECT id,username from users where username=? and password=?', (parameters[0], md5(parameters[1])))
+    r = c.execute('SELECT id,username from users where username=? and password=?',
+                  (parameters[0], sm3.sm3_hash(parameters[1].encode())))
     rows = r.fetchall()
 
     if len(rows) == 0:
