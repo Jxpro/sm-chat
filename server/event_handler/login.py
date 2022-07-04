@@ -12,8 +12,18 @@ from server.util import database
 def run(sc, parameters):
     parameters[0] = parameters[0].strip().lower()
     c = database.get_cursor()
-    r = c.execute('SELECT id,username from users where username=? and password=?',
-                  (parameters[0], sm3.sm3_hash(parameters[1].encode())))
+
+    # 获取盐值
+    s = c.execute('SELECT salt from users where username=?', [parameters[0]])
+    salt = s.fetchall()
+    if len(salt) == 0:
+        sc.send(MessageType.login_failed)
+        return
+    salt = salt[0][0]
+
+    # 查询用户
+    r = c.execute('SELECT id,username,salt from users where username=? and password=?',
+                  (parameters[0], sm3.sm3_hash(parameters[1].encode() + salt)))
     rows = r.fetchall()
 
     if len(rows) == 0:
