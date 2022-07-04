@@ -30,12 +30,10 @@ from server.util import database
 def gen_cert():
     """生成证书"""
     crypt.gen_secret("admin")
-    with open("public.pem", "rb") as f:
+    with open("public.pem", "r") as f:
         public = f.read()
-        f.close()
-    with open("admin_cert.pem", "wb") as f:
-        f.write("server 1529177144@qq.com ".encode() + public)
-        f.close()
+    with open("admin_cert.pem", "w") as f:
+        f.write("server 1529177144@qq.com " + public)
 
 
 def run():

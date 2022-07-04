@@ -1,36 +1,32 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-import hashlib
-
 from common.config import get_config
-from common.cryptography import prime
-from common.util import long_to_bytes
+from common.cryptography import sm2, sm3
 
 config = get_config()
 base = config['crypto']['base']
 modulus = config['crypto']['modulus']
+suite = sm2.SM2Suite(0, 0)
 
 
 def gen_secret(prefix=""):
     """生成公私钥并保存到文件中"""
-    secret = prime.generate_big_prime(12)
-    my_secret = base ** secret % modulus
+    sk, pk = sm2.gen_key_pair()
 
-    with open(prefix + "_private.pem", "wb") as f:
-        f.write(str(secret).encode())
+    with open(prefix + "_private.pem", "w") as f:
+        f.write(sk)
         f.close()
-    with open("public.pem", "wb") as f:
-        f.write(str(my_secret).encode())
+    with open("public.pem", "w") as f:
+        f.write(pk)
         f.close()
 
 
-def get_shared_secret(their_secret, prefix=""):
+def get_shared_secret(pk, prefix=""):
     """生成共享密钥"""
-    f = open(prefix + "_private.pem", "rb")
-    secret = int(f.read())
-    f.close()
-    return hashlib.sha256(long_to_bytes(int(their_secret) ** secret % modulus)).digest()[:16]
+    with open(prefix + "_private.pem", "r") as f:
+        sk = f.read()
+    return sm3.sm3_hash(suite.kg(int(sk, 16), pk.decode()).encode())[:16]
 
 
 def get_pk_from_cert(cert):
