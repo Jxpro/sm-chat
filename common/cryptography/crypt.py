@@ -30,7 +30,7 @@ def get_shared_secret(their_secret, prefix=""):
     f = open(prefix + "_private.pem", "rb")
     secret = int(f.read())
     f.close()
-    return hashlib.sha256(long_to_bytes(int(their_secret) ** secret % modulus)).digest()
+    return hashlib.sha256(long_to_bytes(int(their_secret) ** secret % modulus)).digest()[:16]
 
 
 def get_pk_from_cert(cert):

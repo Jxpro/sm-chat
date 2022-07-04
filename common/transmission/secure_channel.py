@@ -3,26 +3,21 @@
 
 """
 通过安全信道传输的消息格式
-|--Length of Message Body(4Bytes)--|--Length of AES padding (1Byte)--|--AES IV (16Bytes)--|--MAC (32Bytes)--|--Message Body (CSON)--|
+|--Length of Message Body(4Bytes)--|--AES IV (16Bytes)--|--MAC (32Bytes)--|--Message Body (CSON)--|
 """
 
-import hashlib
-import math
 import os
 import socket
 import struct
 from pprint import pprint
 
-from Cryptodome.Cipher import AES
-
 from common.config import get_config
-from common.cryptography import crypt
+from common.cryptography import crypt, sm3
+from common.cryptography.sm4 import SM4Suite, SM4_CBC_MODE
 from common.message import serialize_message, deserialize_message, ByteArrayReader
 
 
 class SecureChannel:
-    # TODO: 将AES改为SM4
-    # TODO: 将MD5改为SM3
     """建立安全信道"""
 
     def __init__(self, socket, shared_secret):
@@ -32,49 +27,31 @@ class SecureChannel:
         return
 
     def send(self, message_type, parameters=None):
-        iv1 = bytes(os.urandom(16))
+        iv = os.urandom(16)
         data_to_encrypt = serialize_message(message_type, parameters)
-        length_of_message = len(data_to_encrypt)
-        padding_n = math.ceil(length_of_message / 16) * 16 - length_of_message
-        for i in range(0, padding_n):
-            data_to_encrypt += b'\0'
-
-        encryption_suite = AES.new(self.shared_secret, AES.MODE_CBC, iv1)
-        encrypted_message = encryption_suite.encrypt(data_to_encrypt)
+        encrypted_message = SM4Suite(self.shared_secret, SM4_CBC_MODE, iv=iv).encrypt(data_to_encrypt)
+        mac = sm3.sm3_hash(encrypted_message)
         length_of_encrypted_message = len(encrypted_message)
-
-        mac = hashlib.md5(encrypted_message).hexdigest().encode()
-
-        self.socket.send(
-            struct.pack('!L', length_of_encrypted_message) + bytes([padding_n]) + iv1 + mac + encrypted_message)
+        self.socket.send(struct.pack('!L', length_of_encrypted_message) + iv + mac + encrypted_message)
         return
 
     def on_data(self, data_array):
         """
-        用select循环socket.recv，当收到一个完整的数据块后（收到后length_of_encrypted_message+1+16+32个字节后），
-        把 bytes([padding_n]) + iv1 + +mac + encrypted_message 传给本函数
+        用select循环socket.recv，当收到一个完整的数据块后（收到后length_of_encrypted_message+16+32个字节后），
+        把 iv + +mac + encrypted_message 传给本函数
         """
         br = ByteArrayReader(data_array)
-
-        padding_n = br.read(1)[0]
-
         iv = br.read(16)
 
         # 对比接收到的mac值和用收到的加密数据算出的mac值是否相等
         recv_mac = br.read(32)
         data = br.read_to_end()
-        mac = hashlib.md5(data).hexdigest().encode()
+        mac = sm3.sm3_hash(data)
         if mac != recv_mac:
             pprint('Message Authentication Error')
             exit(-1)
 
-        decryption_suite = AES.new(self.shared_secret, AES.MODE_CBC, iv)
-        decrypted_data = decryption_suite.decrypt(data)
-
-        if padding_n != 0:
-            decrypted_data = decrypted_data[0:-padding_n]
-
-        return deserialize_message(decrypted_data)
+        return deserialize_message(SM4Suite(self.shared_secret, SM4_CBC_MODE, iv=iv).decrypt(data))
 
     def close(self):
         self.socket.close()

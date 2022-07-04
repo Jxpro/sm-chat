@@ -100,7 +100,7 @@ def run():
 
                 else:
                     data_buffer[sc] = bytes()
-                    bytes_to_receive[sc] = struct.unpack('!L', first_4_bytes)[0] + 16 + 1 + 32
+                    bytes_to_receive[sc] = struct.unpack('!L', first_4_bytes)[0] + 16 + 32
 
             buffer = sc.socket.recv(bytes_to_receive[sc] - bytes_received[sc])
             data_buffer[sc] += buffer
