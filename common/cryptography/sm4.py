@@ -1,5 +1,5 @@
 # -*-coding:utf-8-*-
-
+import os
 from functools import reduce
 
 from common.cryptography.func import *
@@ -60,11 +60,11 @@ class SM4Suite(object):
 
     def __init__(self, key, mode, **kwargs):
         """
-        :param key: 固定16字节，16进制，字符串类型的密钥
-        :param iv: 固定16字节，16进制，字符串类型的初始化向量
-        :param nonce: 固定16字节，16进制，字符串类型的计数器种子
+        :param key: 16字节bytes类型的密钥
+        :param iv: 16字节bytes类型的初始化向量
+        :param nonce: 16字节bytes类型的计数器种子
         """
-        self.key = list(int(key, 16).to_bytes(16, 'big'))
+        self.key = key
         self.mode = mode
         self.iv = kwargs.get('iv', None)
         self.nonce = kwargs.get('nonce', None)
@@ -226,7 +226,7 @@ class SM4Suite(object):
         :return: list类型，返回加解密后的数据.
         """
         # 将iv附加到输出结果前面，方便计算
-        iv = list(int(self.iv, 16).to_bytes(16, 'big'))
+        iv = list(self.iv)
         output_data = iv
         input_data = iv + input_data
 
@@ -254,7 +254,7 @@ class SM4Suite(object):
         :return: list类型，返回加解密后的数据.
         """
         # 将iv附加到输出结果前面，方便计算
-        iv = list(int(self.iv, 16).to_bytes(16, 'big'))
+        iv = list(self.iv)
         output_data = iv
         input_data = iv + input_data
 
@@ -282,7 +282,7 @@ class SM4Suite(object):
         :return: list类型，返回加解密后的数据.
         """
         # 将iv附加到输出结果前面，方便计算
-        output_data = list(int(self.iv, 16).to_bytes(16, 'big'))
+        output_data = list(self.iv)
 
         # 当数据剩余长度大于16时，继续进行分组加密
         while length > 0:
@@ -317,11 +317,11 @@ class SM4Suite(object):
 
 
 if __name__ == '__main__':
-    test_key = '0123456789abcdeffedcba9876543210'
-    test_nonce = '12345678'
+    test_key = os.urandom(16)
+    test_nonce = os.urandom(16)
     test_data = b'1234567890abcdef_padding\x00\x01\x00'
 
-    suite = SM4Suite(test_key, SM4_CFB_MODE, iv=test_key, nonce=test_nonce)
+    suite = SM4Suite(test_key, SM4_CBC_MODE, iv=test_key, nonce=test_nonce)
     cipher = suite.encrypt(test_data)
     plain = suite.decrypt(cipher)
     print([hex(i) for i in cipher])
