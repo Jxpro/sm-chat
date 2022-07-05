@@ -20,24 +20,15 @@ import select
 import common.transmission.secure_channel
 import server.memory
 from common.config import get_config
-from common.cryptography import crypt
+from common.cryptography.cert import gen_cert
 from common.message import MessageType
 from server.event_handler import handle_event
 from server.memory import *
 from server.util import database
 
 
-def gen_cert():
-    """生成证书"""
-    crypt.gen_secret("admin")
-    with open("public.pem", "r") as f:
-        public = f.read()
-    with open("admin_cert.pem", "w") as f:
-        f.write("server\n1529177144@qq.com\n" + public)
-
-
 def run():
-    gen_cert()
+    gen_cert("admin")
 
     config = get_config()
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

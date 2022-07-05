@@ -6,5 +6,9 @@
   "server": {
     "bind_ip": "0.0.0.0",
     "bind_port": 2333
+  },
+  "CA": {
+    "pk": "b2d37b7ae6367efee52c4b17ee2a2130c2be2dbf126ec5761eb0b20d004ff42d9934e280146dff2acb4fe259f904389a542a34321f526ec5a661b8ffce1bf97c",
+    "sk": "0xd1c1659c72396a01baa3cd5b0cf5fb85fbd4dccce6ea0b986a6b2d753d135d03"
   }
 }

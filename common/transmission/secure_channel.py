@@ -12,7 +12,7 @@ import struct
 from pprint import pprint
 
 from common.config import get_config
-from common.cryptography import crypt, sm3
+from common.cryptography import cert, sm3, sm2
 from common.cryptography.sm4 import SM4Suite, SM4_CBC_MODE
 from common.message import serialize_message, deserialize_message, ByteArrayReader
 
@@ -20,9 +20,9 @@ from common.message import serialize_message, deserialize_message, ByteArrayRead
 class SecureChannel:
     """建立安全信道"""
 
-    def __init__(self, socket, shared_secret):
-        socket.setblocking(0)
-        self.socket = socket
+    def __init__(self, sc_socket, shared_secret):
+        sc_socket.setblocking(0)
+        self.socket = sc_socket
         self.shared_secret = shared_secret
         return
 
@@ -66,54 +66,87 @@ def establish_secure_channel_to_server():
 
     # 获取本机IP
     ip = get_ip()
-    s.send(ip.encode())
 
-    # 接收服务器证书
-    server_cert = s.recv(1024)
-
-    certname = ip + "_cert.pem"
-    if not os.path.exists(certname):
-        # 生成私钥公钥和证书
-        crypt.gen_secret("client")
-        f = open('public.pem', 'r')
-        public = f.read()
-        with open(certname, 'w') as f:
-            f.write("client\n1529177144@qq.com\n" + public)
+    # 如果客户端的证书不存在，则创建一个新的证书
+    cert_name = ip + "_cert.pem"
+    if not os.path.exists(cert_name):
+        cert.gen_cert(ip)
 
     # 首次连接，给服务器发送证书
-    with open(certname, 'rb') as f:
+    with open(cert_name, 'rb') as f:
         s.send(f.read())
 
-    pk = crypt.get_pk_from_cert(server_cert)
-    # 计算出共同密钥
-    shared_secret = crypt.get_shared_secret(pk, "client")
+    # 接收服务器证书
+    server_cert = s.recv(1024).decode()
+    # 验证服务器证书
+    if not cert.verify_cert(server_cert):
+        raise Exception("Server's cert is invalid")
 
-    sc = SecureChannel(s, shared_secret)
+    # 获取服务器公钥
+    server_pk = cert.get_pk(server_cert)
+    # 获取客户端密钥
+    client_sk = cert.get_sk(ip + "_private.pem")
+    # 密钥协商
+    share_secret = key_agreement(s, server_pk, client_sk)
+
+    sc = SecureChannel(s, bytes.fromhex(share_secret[:32]))
 
     return sc
 
 
-def accept_client_to_secure_channel(socket):
-    conn, addr = socket.accept()
+def accept_client_to_secure_channel(sc_socket):
+    conn, address = sc_socket.accept()
 
-    # 首次连接，客户端会发送diffle hellman密钥
-    ip = conn.recv(1024)
-    certname = ip.decode() + "_cert.pem"
+    # 接收客户端证书
+    client_cert = conn.recv(1024)
+
+    # 验证客户端证书
+    if not cert.verify_cert(client_cert):
+        raise Exception("Client's cert is invalid")
 
     # 把服务器的证书发送给客户端
     with open("admin_cert.pem", 'rb') as f:
         conn.send(f.read())
 
-    client_cert = conn.recv(1024)
-    with open(certname, 'wb') as f:
-        f.write(client_cert)
+    # 获取客户端公钥
+    client_pk = cert.get_pk(client_cert)
+    # 获取客户端密钥
+    server_sk = cert.get_sk("admin_private.pem")
+    # 密钥协商
+    share_secret = key_agreement(conn, client_pk, server_sk)
 
-    # 计算出共享密钥
-    pk = crypt.get_pk_from_cert(client_cert)
-    shared_secert = crypt.get_shared_secret(pk, "admin")
-    sc = SecureChannel(conn, shared_secert)
-
+    sc = SecureChannel(conn, bytes.fromhex(share_secret[:32]))
     return sc
+
+
+def key_agreement(s, pk, sk):
+    """
+    密钥协商
+    :param s: socket连接
+    :param pk: 公钥
+    :param sk: 私钥
+    :return: session_key
+    """
+    # 会话加密套件
+    session_suite = sm2.SM2Suite(sk, pk)
+
+    # 生成会话密钥对
+    session_sk, session_pk = cert.gen_session_key()
+
+    # 发送会话密钥
+    s.send((session_pk + session_suite.sign(session_pk.encode(), os.urandom(16).hex())).encode())
+
+    # 接受会话密钥
+    recv_data = s.recv(1024).decode()
+    recv_session_pk = recv_data[:128]
+    recv_sign = recv_data[128:]
+
+    # 验证会话密钥
+    if not session_suite.verify(recv_sign, recv_session_pk.encode()):
+        raise Exception("Session key is invalid")
+
+    # 计算会话密钥
+    return session_suite.kg(int(session_sk, 16), recv_session_pk)
 
 
 def get_ip():
