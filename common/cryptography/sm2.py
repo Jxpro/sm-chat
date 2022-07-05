@@ -130,7 +130,11 @@ class SM2Suite(object):
             return None
 
     def kg(self, k, point):
-        """kP倍点运算"""
+        """
+        kP倍点运算
+        :param k: int类型
+        :param point: str类型
+        """
         point = '%s%s' % (point, '1')
         mask_str = '8'
         for i in range(self.para_len - 1):
@@ -151,7 +155,11 @@ class SM2Suite(object):
         return self._convert_jacb_to_nor(Temp)
 
     def verify(self, sign, data):
-        """验证签名"""
+        """
+        验证签名
+        :param sign: str类型
+        :param data: bytes类型
+        """
         r = int(sign[0:self.para_len], 16)
         s = int(sign[self.para_len:2 * self.para_len], 16)
         e = int(data.hex(), 16)
@@ -173,7 +181,12 @@ class SM2Suite(object):
         return r == ((e + x) % int(self.ecc_table['n'], base=16))
 
     def sign(self, data, k):
-        """签名"""
+        """
+        签名
+        :param data: bytes类型，待签名数据
+        :param k: str类型，签名随机数
+        :return: str类型，签名
+        """
         E = data.hex()
         e = int(E, 16)
 
@@ -245,6 +258,10 @@ if __name__ == '__main__':
     suit = SM2Suite(test_sk, test_pk)
     test_data = b'1234567890'
     cipher = suit.encrypt(test_data)
+    sign = suit.sign(test_data, '1234567890')
     print(cipher)
     plain = suit.decrypt(cipher)
     print(plain)
+    print(type(sign))
+    print(sign)
+    print(suit.verify(sign, test_data))
